@@ -1,6 +1,27 @@
 from supy import wrappedChain,utils,calculables
 import ROOT as r
 
+
+#___________________________________________________________
+class IndicesFilteredOnSector(wrappedChain.calculable) :
+    def __init__(self, collection = None, filterFunction = None) :
+        self.fixes = collection
+        self.stash(['sectorNumber'])
+        self.func = filterFunction
+    def update(self,_) :
+        self.value = [i for i,s in enumerate(self.source[self.sectorNumber]) if self.func(s)]
+#___________________________________________________________
+class IndicesOddSector(IndicesFilteredOnSector) :
+    def __init__(self, collection = None) :
+        super(IndicesOddSector, self).__init__(collection)
+        def isOdd(i) : return i%2
+        self.func = isOdd
+#___________________________________________________________
+class IndicesEvenSector(IndicesFilteredOnSector) :
+    def __init__(self, collection = None) :
+        super(IndicesEvenSector, self).__init__(collection)
+        def isEven(i) : return not i%2
+        self.func = isEven
 #___________________________________________________________
 class Indices(wrappedChain.calculable) :
     @property
