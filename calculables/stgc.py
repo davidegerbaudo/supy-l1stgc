@@ -1,4 +1,4 @@
-from supy import wrappedChain,utils,calculables
+from supy import wrappedChain,utils,calculables,utils
 import ROOT as r
 
 
@@ -47,14 +47,14 @@ class Indices(wrappedChain.calculable) :
                          'padEta','padPhi',
                          'mask',
                          'stripNumber',
-                         'wireNumber',
-                         ])
+                         'wireNumber',] \
+                       + ['Pos']
+                   )
         self.moreName = ';'.join(filter(lambda x:x,
                                         ["Layer in %s"%str(list(self.layers)) if self.layers else '',
                                          "Sector in %s"%str(list(self.sectors)) if self.sectors else '',
                                          ])
                                  )
-
     def update(self,_) :
         layer = self.source[self.layer]
         sector = self.source[self.sectorNumber]
@@ -66,6 +66,20 @@ class Indices(wrappedChain.calculable) :
 class simhitIndices(Indices):
     @property
     def name(self): return 'simhitIndices' + self.label
+
+class Pos(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'Pos'.join(self.fixes)
+    def __init__(self, collection) :
+        self.fixes = collection
+        self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
+        self.pv3 = utils.root.PositionV
+    def update(self, _) :
+        xs = self.source[self.globalPositionX]
+        ys = self.source[self.globalPositionY]
+        zs = self.source[self.globalPositionZ]
+        self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
+
 
 #
 # todo : define calculables for micromega hits
