@@ -41,7 +41,7 @@ class Indices(wrappedChain.calculable) :
                              range(layer.size()) )
 class simhitIndices(Indices):
     @property
-    def name(self): return 'stgcIndices' + self.label
+    def name(self): return 'simhitIndices' + self.label
 
 #
 # todo : define calculables for micromega hits

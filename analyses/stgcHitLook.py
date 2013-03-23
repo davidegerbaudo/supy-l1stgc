@@ -7,14 +7,14 @@ class stgcHitLook(supy.analysis) :
         steps  = []
         steps += [supy.steps.printer.progressPrinter(),
                   supy.steps.histos.multiplicity('truthIndices', max=10),
-                  supy.steps.histos.multiplicity('stgcIndices', max=50),
+                  supy.steps.histos.multiplicity('simhitIndices', max=50),
                   ]
         return steps
     
     def listOfCalculables(self,config) :
         calcs  = supy.calculables.zeroArgs(supy.calculables)
         calcs += [calculables.truth.truthIndices(label=''),
-                  calculables.stgc.stgcIndices(label=''),
+                  calculables.stgc.simhitIndices(label=''),
                   ]
         return calcs
     
