@@ -3,6 +3,13 @@ import calculables, samples
 
 class stgcHitLook(supy.analysis) :
     
+    def parameters(self) :
+        fields =                    [ 'stgcSimhit',     ]
+        objects =  dict(zip(fields, [('Hits_sTGC_',''), ]))
+        return {
+            'objects'  : objects,
+            }
+
     def listOfSteps(self,config) :
         steps  = []
         steps += [supy.steps.printer.progressPrinter(),
