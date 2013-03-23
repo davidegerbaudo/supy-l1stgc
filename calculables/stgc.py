@@ -39,7 +39,7 @@ class Indices(wrappedChain.calculable) :
                                  ( (not self.sectors) or (sector.at(i) in self.sectors) )
                              ,
                              range(layer.size()) )
-class stgcIndices(Indices):
+class simhitIndices(Indices):
     @property
     def name(self): return 'stgcIndices' + self.label
 
