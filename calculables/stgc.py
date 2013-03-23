@@ -4,25 +4,24 @@ import ROOT as r
 
 #___________________________________________________________
 class IndicesFilteredOnSector(wrappedChain.calculable) :
-    def __init__(self, collection = None, filterFunction = None) :
+    def __init__(self, collection = None, filterFunctionExpression = None) :
         self.fixes = collection
         self.stash(['sectorNumber'])
-        self.func = filterFunction
+        self.func = filterFunctionExpression
     def update(self,_) :
-        self.value = [i for i,s in enumerate(self.source[self.sectorNumber]) if self.func(s)]
+        func = eval(self.func)
+        self.value = [i for i,s in enumerate(self.source[self.sectorNumber]) if func(s)]
 #___________________________________________________________
 class IndicesOddSector(IndicesFilteredOnSector) :
     def __init__(self, collection = None) :
         super(IndicesOddSector, self).__init__(collection)
-        def isOdd(i) : return i%2
-        self.func = isOdd
+        self.func = 'lambda i : not i%2'
 #___________________________________________________________
 class IndicesEvenSector(IndicesFilteredOnSector) :
     def __init__(self, collection = None) :
         super(IndicesEvenSector, self).__init__(collection)
-        def isEven(i) : return not i%2
-        self.func = isEven
-#___________________________________________________________
+        self.func = 'lambda i : i%2'
+#__________________________________________________________
 class Indices(wrappedChain.calculable) :
     @property
     def name(self) : return 'Indices' + self.label
