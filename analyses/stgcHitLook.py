@@ -9,14 +9,14 @@ class stgcHitLook(supy.analysis) :
         return {
             'objects'  : objects,
             }
-
-   def listOfSteps(self,config) :
+    def listOfSteps(self,config) :
         steps  = []
         steps += [supy.steps.printer.progressPrinter(),
                   supy.steps.histos.multiplicity('truthIndices', max=10),
                   supy.steps.histos.multiplicity('simhitIndices', max=50),
                   supy.steps.histos.multiplicity('IndicesOddSector', max=50),
                   supy.steps.histos.multiplicity('IndicesEvenSector', max=50),
+                  supy.steps.histos.multiplicity('Hits_sTGC_Pos', max=50),
                   ]
         return steps
     
