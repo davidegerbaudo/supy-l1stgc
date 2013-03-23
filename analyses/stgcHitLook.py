@@ -15,6 +15,8 @@ class stgcHitLook(supy.analysis) :
         steps += [supy.steps.printer.progressPrinter(),
                   supy.steps.histos.multiplicity('truthIndices', max=10),
                   supy.steps.histos.multiplicity('simhitIndices', max=50),
+                  supy.steps.histos.multiplicity('IndicesOddSector', max=50),
+                  supy.steps.histos.multiplicity('IndicesEvenSector', max=50),
                   ]
         return steps
     
