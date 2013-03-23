@@ -2,7 +2,7 @@ import supy, ROOT as r
 import calculables, samples
 
 class stgcHitLook(supy.analysis) :
-    
+
     def parameters(self) :
         fields =                    [ 'stgcSimhit',     ]
         objects =  dict(zip(fields, [('Hits_sTGC_',''), ]))
@@ -10,7 +10,7 @@ class stgcHitLook(supy.analysis) :
             'objects'  : objects,
             }
 
-    def listOfSteps(self,config) :
+   def listOfSteps(self,config) :
         steps  = []
         steps += [supy.steps.printer.progressPrinter(),
                   supy.steps.histos.multiplicity('truthIndices', max=10),
@@ -21,10 +21,16 @@ class stgcHitLook(supy.analysis) :
         return steps
     
     def listOfCalculables(self,config) :
+
+        obj = config['objects']
+        simhit = obj['stgcSimhit']
+
         calcs  = supy.calculables.zeroArgs(supy.calculables)
         calcs += [calculables.truth.truthIndices(label=''),
                   calculables.stgc.simhitIndices(label=''),
                   ]
+        calcs += supy.calculables.fromCollections(calculables.stgc, [simhit, ])
+
         return calcs
     
     def listOfSampleDictionaries(self) :
