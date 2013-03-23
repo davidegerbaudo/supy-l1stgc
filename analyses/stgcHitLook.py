@@ -6,13 +6,15 @@ class stgcHitLook(supy.analysis) :
     def listOfSteps(self,config) :
         steps  = []
         steps += [supy.steps.printer.progressPrinter(),
-                  supy.steps.histos.value('Two',10,0,10),
+                  supy.steps.histos.multiplicity('truthIndices', max=10),
+                  supy.steps.histos.multiplicity('stgcIndices', max=50),
                   ]
         return steps
     
     def listOfCalculables(self,config) :
         calcs  = supy.calculables.zeroArgs(supy.calculables)
-        calcs += [supy.calculables.other.fixedValue('Two',2),
+        calcs += [calculables.truth.truthIndices(label=''),
+                  calculables.stgc.stgcIndices(label=''),
                   ]
         return calcs
     
