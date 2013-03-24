@@ -11,21 +11,24 @@ class stgcHitLook(supy.analysis) :
             'allSectors' : range(1,16+1),
             }
     def listOfSteps(self,config) :
-        sh  = steps.histos
-        ssh = supy.steps.histos
+        sh, ssh = steps.histos, supy.steps.histos
+        obj = config['objects']
+        stsh = obj['stgcSimhit']
+        stsi = 'simhitIndices'
+        stsp = 'Pos'.join(stsh)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
                    ssh.multiplicity('truthIndices', max=10),
                    ssh.multiplicity('simhitIndices', max=50),
                    ssh.multiplicity('IndicesOddSector', max=50),
                    ssh.multiplicity('IndicesEvenSector', max=50),
-                   ssh.multiplicity('Hits_sTGC_Pos', max=50),
-                   sh.xyMap('Hits_sTGC_Pos'),
-                   sh.xyMap('Hits_sTGC_Pos', indices='IndicesOddSector'),
-                   sh.xyMap('Hits_sTGC_Pos', indices='IndicesEvenSector'),
+                   ssh.multiplicity(stsp, max=50),
+                   sh.xyMap(stsp),
+                   sh.xyMap(stsp, indices='IndicesOddSector'),
+                   sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
         lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
-        lsteps += [ssh.value(var='Hits_sTGC_layer', indices='simhitIndices', N=21, low=-0.5, up=20.5)]
+        lsteps += [ssh.value(var='layer'.join(stsh), indices='simhitIndices', N=6, low=-0.5, up=5.5)]
         return lsteps
     
     def listOfCalculables(self,config) :
