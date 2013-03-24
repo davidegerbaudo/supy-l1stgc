@@ -8,16 +8,21 @@ class stgcHitLook(supy.analysis) :
         objects =  dict(zip(fields, [('Hits_sTGC_',''), ]))
         return {
             'objects'  : objects,
+            'allSectors' : range(1,16+1),
             }
     def listOfSteps(self,config) :
+        sh  = steps.histos
+        ssh = supy.steps.histos
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
-                   supy.steps.histos.multiplicity('truthIndices', max=10),
-                   supy.steps.histos.multiplicity('simhitIndices', max=50),
-                   supy.steps.histos.multiplicity('IndicesOddSector', max=50),
-                   supy.steps.histos.multiplicity('IndicesEvenSector', max=50),
-                   supy.steps.histos.multiplicity('Hits_sTGC_Pos', max=50),
-                   steps.histos.xyMap('Hits_sTGC_Pos'),
+                   ssh.multiplicity('truthIndices', max=10),
+                   ssh.multiplicity('simhitIndices', max=50),
+                   ssh.multiplicity('IndicesOddSector', max=50),
+                   ssh.multiplicity('IndicesEvenSector', max=50),
+                   ssh.multiplicity('Hits_sTGC_Pos', max=50),
+                   sh.xyMap('Hits_sTGC_Pos'),
+                   sh.xyMap('Hits_sTGC_Pos', indices='IndicesOddSector'),
+                   sh.xyMap('Hits_sTGC_Pos', indices='IndicesEvenSector'),
                   ]
         return lsteps
     
@@ -25,12 +30,12 @@ class stgcHitLook(supy.analysis) :
 
         obj = config['objects']
         simhit = obj['stgcSimhit']
-
+        cs = calculables.stgc
         calcs  = supy.calculables.zeroArgs(supy.calculables)
         calcs += [calculables.truth.truthIndices(label=''),
-                  calculables.stgc.simhitIndices(label=''),
+                  cs.simhitIndices(label=''),
                   ]
-        calcs += supy.calculables.fromCollections(calculables.stgc, [simhit, ])
+        calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
     
