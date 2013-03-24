@@ -25,6 +25,7 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap('Hits_sTGC_Pos', indices='IndicesEvenSector'),
                   ]
         lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
+        lsteps += [ssh.value(var='Hits_sTGC_layer', indices='simhitIndices', N=21, low=-0.5, up=20.5)]
         return lsteps
     
     def listOfCalculables(self,config) :
