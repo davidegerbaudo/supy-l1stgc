@@ -17,6 +17,7 @@ class stgcHitLook(supy.analysis) :
                    supy.steps.histos.multiplicity('IndicesOddSector', max=50),
                    supy.steps.histos.multiplicity('IndicesEvenSector', max=50),
                    supy.steps.histos.multiplicity('Hits_sTGC_Pos', max=50),
+                   steps.histos.xyMap('Hits_sTGC_Pos'),
                   ]
         return lsteps
     
