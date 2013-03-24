@@ -24,6 +24,7 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap('Hits_sTGC_Pos', indices='IndicesOddSector'),
                    sh.xyMap('Hits_sTGC_Pos', indices='IndicesEvenSector'),
                   ]
+        lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
         return lsteps
     
     def listOfCalculables(self,config) :
@@ -35,6 +36,7 @@ class stgcHitLook(supy.analysis) :
         calcs += [calculables.truth.truthIndices(label=''),
                   cs.simhitIndices(label=''),
                   ]
+        calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in config['allSectors']]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
