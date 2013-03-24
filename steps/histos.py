@@ -28,7 +28,7 @@ class xyMap(analysisStep) :
                                title=self.title)
             return
         for i in indices :
-            p = positions[indices[i]]
+            p = positions[i]
             self.book.fill((p.x(), p.y()),
                            "%s_xy"%self.coll,
                            (self.nX, self.nY), (self.xLo, self.yLo), (self.xHi, self.yHi),
