@@ -78,9 +78,9 @@ class stgcHitLook(supy.analysis) :
         return [samples.localsinglemu,]
 
     def listOfSamples(self,config) :
-        test = True
-        nEventsMax=1000 if test else -1
-        return (supy.samples.specify(names='JochenSingleMu', color=r.kBlack, markerStyle = 20, nEventsMax=nEventsMax)
+        test = False
+        nEventsMax=1000 if test else None
+        return (supy.samples.specify(names='JochenSingleMuPos', color=r.kBlack, markerStyle = 20, nEventsMax=nEventsMax)
                 )
 
 
