@@ -50,7 +50,7 @@ class Indices(wrappedChain.calculable) :
                          'mask',
                          'stripNumber',
                          'wireNumber',] \
-                       + ['Pos','Pivot','Confirm']
+                       + ['Pos','LocPos','Pivot','Confirm']
 
                    )
         self.moreName = ';'.join(filter(lambda x:x,
@@ -87,6 +87,19 @@ class Pos(wrappedChain.calculable) :
         xs = self.source[self.globalPositionX]
         ys = self.source[self.globalPositionY]
         zs = self.source[self.globalPositionZ]
+        self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
+#__________________________________________________________
+class LocPos(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'LocPos'.join(self.fixes)
+    def __init__(self, collection) :
+        self.fixes = collection
+        self.stash(["localPosition%s"%v for v in ['X','Y','Z']])
+        self.pv3 = utils.root.PositionV
+    def update(self, _) :
+        xs = self.source[self.localPositionX]
+        ys = self.source[self.localPositionY]
+        zs = self.source[self.localPositionZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
 #__________________________________________________________
 class GenericPivotConfirm(wrappedChain.calculable) :
