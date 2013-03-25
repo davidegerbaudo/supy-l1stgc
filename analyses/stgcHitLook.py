@@ -9,6 +9,8 @@ class stgcHitLook(supy.analysis) :
         return {
             'objects'  : objects,
             'allSectors' : range(1, 16+1),
+            'oddSectors'  : [s for s in range(1, 16+1) if     s%2],
+            'evenSectors' : [s for s in range(1, 16+1) if not s%2],
             'allLayers' :  range(1, 4+1),
             }
     def listOfSteps(self,config) :
