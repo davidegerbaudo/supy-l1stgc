@@ -29,12 +29,14 @@ class IndicesEvenSector(IndicesFilteredOnSector) :
 class Indices(wrappedChain.calculable) :
     @property
     def name(self) : return 'Indices' + self.label
-    def __init__(self, collection=('Hits_sTGC_',''), label=None, layers=[], sectors=[]) :
+    def __init__(self, collection=('Hits_sTGC_',''), label=None, layers=[], sectors=[], pivot=None, confirm=None) :
         xyz = ['X','Y','Z']
-        self.label = label
-        self.layers = frozenset(layers)
+        self.label   = label
+        self.layers  = frozenset(layers)
         self.sectors = frozenset(sectors)
-        self.fixes = collection
+        self.pivot   = pivot
+        self.confirm = confirm
+        self.fixes   = collection
         self.stash(['n','globalTime',] \
                        +["globalPosition%s"%v for v in xyz] \
                        +["globalDirection%s"%v for v in xyz] \
@@ -48,19 +50,26 @@ class Indices(wrappedChain.calculable) :
                          'mask',
                          'stripNumber',
                          'wireNumber',] \
-                       + ['Pos']
+                       + ['Pos','Pivot','Confirm']
+
                    )
         self.moreName = ';'.join(filter(lambda x:x,
                                         ["Layer in %s"%str(list(self.layers)) if self.layers else '',
                                          "Sector in %s"%str(list(self.sectors)) if self.sectors else '',
+                                         'Pivot' if self.pivot else '',
+                                         'Confirm' if self.confirm else '',
                                          ])
                                  )
     def update(self,_) :
-        layer = self.source[self.layer]
-        sector = self.source[self.sectorNumber]
+        layer   = self.source[self.layer]
+        sector  = self.source[self.sectorNumber]
+        pivot   = self.source[self.Pivot]
+        confirm = self.source[self.Confirm]
         self.value = filter( lambda i: \
-                                 ( (not self.layers) or (layer.at(i) in self.layers) ) and \
-                                 ( (not self.sectors) or (sector.at(i) in self.sectors) )
+                                 ( (not self.layers) or (layer.at(i) in self.layers)    ) and \
+                                 ( (not self.sectors) or (sector.at(i) in self.sectors) ) and \
+                                 ( (not self.pivot) or pivot[i]                         ) and \
+                                 ( (not self.confirm) or confirm[i]                     )
                              ,
                              range(layer.size()) )
 class simhitIndices(Indices):
