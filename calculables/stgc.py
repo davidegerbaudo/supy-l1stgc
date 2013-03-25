@@ -66,7 +66,7 @@ class Indices(wrappedChain.calculable) :
 class simhitIndices(Indices):
     @property
     def name(self): return 'simhitIndices' + self.label
-
+#__________________________________________________________
 class Pos(wrappedChain.calculable) :
     @property
     def name(self) : return 'Pos'.join(self.fixes)
@@ -79,6 +79,69 @@ class Pos(wrappedChain.calculable) :
         ys = self.source[self.globalPositionY]
         zs = self.source[self.globalPositionZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
+#__________________________________________________________
+class GenericPivotConfirm(wrappedChain.calculable) :
+    "Used to emulate the pivot confirm bit; will be dropped once we have this piece of info from the geometry"
+    def __init__(self, collection=None, minZ=None, maxZ=None) :
+        self.fixes = collection
+        self.stash(['globalPositionZ'])
+        self.minZ = minZ
+        self.maxZ = maxZ
+    def update(self, _) :
+        self.value = [((abs(z) >= self.minZ if self.minZ!=None else True)
+                       and
+                       (abs(z) <  self.maxZ if self.maxZ!=None else True))
+                      for z in self.source[self.globalPositionZ]]
+#__________________________________________________________
+class SmallConfirm(GenericPivotConfirm) :
+    @property
+    def name(self) : return 'SmallConfirm'.join(self.fixes)
+    def __init__(self, collection = None) :
+        super(SmallConfirm, self).__init__(collection)
+        self.minZ = 7000.
+        self.maxZ = 7100.
+#__________________________________________________________
+class SmallPivot(GenericPivotConfirm) :
+    @property
+    def name(self) : return 'SmallPivot'.join(self.fixes)
+    def __init__(self, collection = None) :
+        super(SmallPivot, self).__init__(collection)
+        self.minZ = 7300.
+        self.maxZ = 7400.
+#__________________________________________________________
+class LargePivot(GenericPivotConfirm) :
+    @property
+    def name(self) : return 'LargePivot'.join(self.fixes)
+    def __init__(self, collection = None) :
+        super(LargePivot, self).__init__(collection)
+        self.minZ = 7400.
+        self.maxZ = 7500.
+#__________________________________________________________
+class LargeConfirm(GenericPivotConfirm) :
+    @property
+    def name(self) : return 'LargeConfirm'.join(self.fixes)
+    def __init__(self, collection = None) :
+        super(LargeConfirm, self).__init__(collection)
+        self.minZ = 7600.
+        self.maxZ = 7800.
+#__________________________________________________________
+class Confirm(wrappedChain.calculable) :
+    def name(self) : return 'Confirm'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(['SmallConfirm','LargeConfirm'])
+    def update(self, _) :
+        self.value = [sc or lc for sc,lc in zip(self.source[self.SmallConfirm], self.source[self.LargeConfirm])]
+#__________________________________________________________
+class Pivot(wrappedChain.calculable) :
+    def name(self) : return 'Pivot'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(['SmallPivot','LargePivot'])
+    def update(self, _) :
+        self.value = [sp or lp for sp,lp in zip(self.source[self.SmallPivot], self.source[self.LargePivot])]
+#__________________________________________________________
+
 
 
 #
