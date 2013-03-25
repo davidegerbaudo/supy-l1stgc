@@ -126,6 +126,7 @@ class LargeConfirm(GenericPivotConfirm) :
         self.maxZ = 7800.
 #__________________________________________________________
 class Confirm(wrappedChain.calculable) :
+    @property
     def name(self) : return 'Confirm'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
@@ -134,6 +135,7 @@ class Confirm(wrappedChain.calculable) :
         self.value = [sc or lc for sc,lc in zip(self.source[self.SmallConfirm], self.source[self.LargeConfirm])]
 #__________________________________________________________
 class Pivot(wrappedChain.calculable) :
+    @property
     def name(self) : return 'Pivot'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
