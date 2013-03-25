@@ -56,7 +56,7 @@ class stgcHitLook(supy.analysis) :
         return [samples.localsinglemu,]
     
     def listOfSamples(self,config) :
-        return (supy.samples.specify(names="SingleMu", color=r.kBlack, markerStyle = 20)
+        return (supy.samples.specify(names='JochenSingleMu', color=r.kBlack, markerStyle = 20)
                 )
 
     
