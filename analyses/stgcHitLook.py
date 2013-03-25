@@ -34,7 +34,8 @@ class stgcHitLook(supy.analysis) :
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
                               for s in config['allSectors'] for l in config['allLayers']]
         lsteps += [ssh.multiplicity(isl, 10) for isl in indicesSectorLayer]
-        lsteps += [sh.xyMap(stsp, indices=isl) for isl in indicesSectorLayer]
+        lsteps += [sh.xyMap(stsp, indices="IndicesOddSectorsLayer%d"%l) for l in config['allLayers']]
+        lsteps += [sh.xyMap(stsp, indices="IndicesEvenSectorsLayer%d"%l) for l in config['allLayers']]
 
         return lsteps
     
@@ -50,6 +51,12 @@ class stgcHitLook(supy.analysis) :
         calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in config['allSectors']]
         calcs += [cs.Indices(simhit, "Sector%dLayer%d"%(s,l), sectors=[s,], layers=[l,])
                   for s in config['allSectors'] for l in config['allLayers']]
+        calcs += [cs.Indices(simhit, "OddSectorsLayer%d"%l,
+                             sectors=config['oddSectors'], layers=[l,])
+                  for l in config['allLayers']]
+        calcs += [cs.Indices(simhit, "EvenSectorsLayer%d"%l,
+                             sectors=config['evenSectors'], layers=[l,])
+                  for l in config['allLayers']]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
