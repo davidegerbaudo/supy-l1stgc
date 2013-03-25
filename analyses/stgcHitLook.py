@@ -31,18 +31,15 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
 #        lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
-        indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
-                              for s in config['allSectors'] for l in config['allLayers']]
-        # lsteps += [ssh.multiplicity(isl, 10) for isl in indicesSectorLayer]
-        # lsteps += [sh.xyMap(stsp, indices="IndicesOddSectorsLayer%d"%l) for l in config['allLayers']]
-        # lsteps += [sh.xyMap(stsp, indices="IndicesEvenSectorsLayer%d"%l) for l in config['allLayers']]
         allLayers = config['allLayers']
-        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,'simhitIndices')]
-        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,idx)
-                  for idx in ["IndicesEvenSectorsLayer%d"%l for l in allLayers]\
-                      +["IndicesEvenSectorsLayer%d"%l for l in allLayers]]
-        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,"IndicesEvenPivotSectorsLayer%d"%l) for l in allLayers]
-        lsteps += [supy.steps.printer.printstuff(['Hits_sTGC_'+pc for pc in ['SmallConfirm', 'SmallPivot','LargePivot','LargeConfirm']])]
+        indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
+                              for s in config['allSectors'] for l in allLayers]
+        indicesEoCpSectorsLayer = ["Indices%s%sSectorsLayer%d"%(eo,cp,l)
+                                   for eo in ['Even','Odd']
+                                   for cp in ['Confirm','Pivot']
+                                   for l in allLayers]
+        lsteps += [ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
 
         return lsteps
 
@@ -55,21 +52,23 @@ class stgcHitLook(supy.analysis) :
         calcs += [calculables.truth.truthIndices(label=''),
                   cs.simhitIndices(label=''),
                   ]
-        calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in config['allSectors']]
+        allSectors, allLayers = config['allSectors'], config['allLayers']
+        oddSectors, evenSectors = config['oddSectors'], config['evenSectors']
+        calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in allSectors]
         calcs += [cs.Indices(simhit, "Sector%dLayer%d"%(s,l), sectors=[s,], layers=[l,])
-                  for s in config['allSectors'] for l in config['allLayers']]
+                  for s in allSectors for l in allLayers]
         calcs += [cs.Indices(simhit, "OddSectorsLayer%d"%l,
                              sectors=config['oddSectors'], layers=[l,])
                   for l in config['allLayers']]
         calcs += [cs.Indices(simhit, "EvenSectorsLayer%d"%l,
                              sectors=config['evenSectors'], layers=[l,])
                   for l in config['allLayers']]
-        calcs += [cs.Indices(simhit, "EvenPivotSectorsLayer%d"%l,
-                             sectors=config['evenSectors'], layers=[l,],pivot=True)
-                  for l in config['allLayers']]
-        calcs += [cs.Indices(simhit, "EvenConfirmSectorsLayer%d"%l,
-                             sectors=config['evenSectors'], layers=[l,],confirm=True)
-                  for l in config['allLayers']]
+
+        calcs += [cs.Indices(simhit, eok+pck+"SectorsLayer%d"%l,
+                             sectors=eos, layers=[l,],pivot=pcv, confirm=not pcv)
+                  for eok, eos in zip(['Even',  'Odd'    ], [evenSectors, oddSectors])
+                  for pck, pcv in zip(['Pivot', 'Confirm'], [True,        False     ])
+                  for l in allLayers]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
