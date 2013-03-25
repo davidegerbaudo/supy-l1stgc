@@ -159,11 +159,11 @@ class Pivot(wrappedChain.calculable) :
 # -- 'globalDirectionX',
 # -- 'globalDirectionY',
 # -- 'globalDirectionZ',
-# -- 
+# --
 # -- 'localPositionX',
 # -- 'localPositionY',
 # -- 'localPositionZ',
-# -- 
+# --
 # -- 'particleEncoding',
 # -- 'kineticEnergy',
 # -- 'depositEnergy',
