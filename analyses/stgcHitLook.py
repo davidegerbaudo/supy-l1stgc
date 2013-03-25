@@ -30,15 +30,22 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap(stsp, indices='IndicesOddSector'),
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
-        lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
+#        lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
                               for s in config['allSectors'] for l in config['allLayers']]
-        lsteps += [ssh.multiplicity(isl, 10) for isl in indicesSectorLayer]
-        lsteps += [sh.xyMap(stsp, indices="IndicesOddSectorsLayer%d"%l) for l in config['allLayers']]
-        lsteps += [sh.xyMap(stsp, indices="IndicesEvenSectorsLayer%d"%l) for l in config['allLayers']]
+        # lsteps += [ssh.multiplicity(isl, 10) for isl in indicesSectorLayer]
+        # lsteps += [sh.xyMap(stsp, indices="IndicesOddSectorsLayer%d"%l) for l in config['allLayers']]
+        # lsteps += [sh.xyMap(stsp, indices="IndicesEvenSectorsLayer%d"%l) for l in config['allLayers']]
+        allLayers = config['allLayers']
+        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,'simhitIndices')]
+        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,idx)
+                  for idx in ["IndicesEvenSectorsLayer%d"%l for l in allLayers]\
+                      +["IndicesEvenSectorsLayer%d"%l for l in allLayers]]
+        lsteps +=[ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,"IndicesEvenPivotSectorsLayer%d"%l) for l in allLayers]
+        lsteps += [supy.steps.printer.printstuff(['Hits_sTGC_'+pc for pc in ['SmallConfirm', 'SmallPivot','LargePivot','LargeConfirm']])]
 
         return lsteps
-    
+
     def listOfCalculables(self,config) :
 
         obj = config['objects']
@@ -57,20 +64,26 @@ class stgcHitLook(supy.analysis) :
         calcs += [cs.Indices(simhit, "EvenSectorsLayer%d"%l,
                              sectors=config['evenSectors'], layers=[l,])
                   for l in config['allLayers']]
+        calcs += [cs.Indices(simhit, "EvenPivotSectorsLayer%d"%l,
+                             sectors=config['evenSectors'], layers=[l,],pivot=True)
+                  for l in config['allLayers']]
+        calcs += [cs.Indices(simhit, "EvenConfirmSectorsLayer%d"%l,
+                             sectors=config['evenSectors'], layers=[l,],confirm=True)
+                  for l in config['allLayers']]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
-    
+
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu,]
-    
+
     def listOfSamples(self,config) :
         test = True
         nEventsMax=1000 if test else -1
         return (supy.samples.specify(names='JochenSingleMu', color=r.kBlack, markerStyle = 20, nEventsMax=nEventsMax)
                 )
 
-    
+
     def conclude(self,pars) :
         #make a pdf file with plots from the histograms created above
         org = self.organizer(pars)
