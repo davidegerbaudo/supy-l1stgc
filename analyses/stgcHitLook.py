@@ -8,7 +8,8 @@ class stgcHitLook(supy.analysis) :
         objects =  dict(zip(fields, [('Hits_sTGC_',''), ]))
         return {
             'objects'  : objects,
-            'allSectors' : range(1,16+1),
+            'allSectors' : range(1, 16+1),
+            'allLayers' :  range(1, 4+1),
             }
     def listOfSteps(self,config) :
         sh, ssh = steps.histos, supy.steps.histos
@@ -28,7 +29,11 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
         lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
-        lsteps += [ssh.value(var='layer'.join(stsh), indices='simhitIndices', N=6, low=-0.5, up=5.5)]
+        indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
+                              for s in config['allSectors'] for l in config['allLayers']]
+        lsteps += [ssh.multiplicity(isl, 10) for isl in indicesSectorLayer]
+        lsteps += [sh.xyMap(stsp, indices=isl) for isl in indicesSectorLayer]
+
         return lsteps
     
     def listOfCalculables(self,config) :
@@ -41,6 +46,8 @@ class stgcHitLook(supy.analysis) :
                   cs.simhitIndices(label=''),
                   ]
         calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in config['allSectors']]
+        calcs += [cs.Indices(simhit, "Sector%dLayer%d"%(s,l), sectors=[s,], layers=[l,])
+                  for s in config['allSectors'] for l in config['allLayers']]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
 
         return calcs
