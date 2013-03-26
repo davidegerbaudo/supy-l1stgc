@@ -22,10 +22,8 @@ class stgcHitLook(supy.analysis) :
         stslp = 'LocPos'.join(stsh)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
-                   ssh.multiplicity('simhitIndices', max=50),
                    ssh.multiplicity('IndicesOddSector', max=50),
                    ssh.multiplicity('IndicesEvenSector', max=50),
-                   ssh.multiplicity(stsp, max=50),
                    sh.xyMap(stsp, indices='IndicesOddSector'),
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
