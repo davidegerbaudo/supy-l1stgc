@@ -36,9 +36,9 @@ class stgcHitLook(supy.analysis) :
                                    for cp in ['Confirm','Pivot']
                                    for l in allLayers]
         lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.xyMap(stslp, indices=idx, xLo=-2.0,xHi=+2.0, yLo=-1500.0,yHi=+1500.0)
-                   for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.rho(stsp, 250, 0.0, 5000.0, idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.xyMap(stslp, indices=idx, xLo=-2.0,xHi=+2.0, yLo=-1500.0,yHi=+1500.0)
+        #            for idx in indicesEoCpSectorsLayer]
 
         return lsteps
 
