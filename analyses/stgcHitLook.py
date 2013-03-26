@@ -36,9 +36,12 @@ class stgcHitLook(supy.analysis) :
                                    for eo in ['Even','Odd']
                                    for cp in ['Confirm','Pivot']
                                    for l in allLayers]
-        lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.xyMap(stsslp, indices=idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.xyMap(stsslp, indices=idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh)]
+                                                + [('BasicWedgeTrigger'+nl+'L').join(stsh)
+                                                   for nl in ['3','4']])]
 
         return lsteps
 
@@ -69,6 +72,7 @@ class stgcHitLook(supy.analysis) :
                   for pck, pcv in zip(['Pivot', 'Confirm'], [True,        False     ])
                   for l in allLayers]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
+        calcs += [cs.BasicWedgeTrigger(simhit, nl) for nl in [3,4]]
 
         return calcs
 
@@ -76,8 +80,8 @@ class stgcHitLook(supy.analysis) :
         return [samples.localsinglemu,]
 
     def listOfSamples(self,config) :
-        test = False #True
-        nEventsMax=10000 if test else None
+        test = True #False
+        nEventsMax=10 if test else None
         return (supy.samples.specify(names='JochenSingleMuPos', color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
                 )
 
