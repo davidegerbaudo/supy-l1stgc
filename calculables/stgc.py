@@ -120,9 +120,8 @@ class SecLocPos(wrappedChain.calculable) :
         targetPhi = midSectorPhi(5) # sector 5 is the one centered on the y axis
         def rotationAngle(sec) : return midSectorPhi(sec) - targetPhi
         repv = r.Math.RhoEtaPhiVector
-        vsXyz = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
-        vsRep = [repv(v.rho(), v.eta(), v.phi()).SetPhi(v.phi() - (midSectorPhi(s)-targetPhi))
-                 for v,s in zip(vsXyz, sns)]
+        vsXyz = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)] # intermediate vector to simplify rotation
+        vsRep = [repv(v.rho(), v.eta(), v.phi()).SetPhi(v.phi() - rotationAngle(s)) for v,s in zip(vsXyz, sns)]
         self.value = [self.pv3(v.x(),v.y(),v.z()) for v in vsRep]
 #__________________________________________________________
 class GenericPivotConfirm(wrappedChain.calculable) :
