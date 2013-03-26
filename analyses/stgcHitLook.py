@@ -22,12 +22,10 @@ class stgcHitLook(supy.analysis) :
         stslp = 'LocPos'.join(stsh)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
-                   ssh.multiplicity('truthIndices', max=10),
                    ssh.multiplicity('simhitIndices', max=50),
                    ssh.multiplicity('IndicesOddSector', max=50),
                    ssh.multiplicity('IndicesEvenSector', max=50),
                    ssh.multiplicity(stsp, max=50),
-                   sh.xyMap(stsp),
                    sh.xyMap(stsp, indices='IndicesOddSector'),
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
@@ -39,10 +37,10 @@ class stgcHitLook(supy.analysis) :
                                    for eo in ['Even','Odd']
                                    for cp in ['Confirm','Pivot']
                                    for l in allLayers]
-        lsteps += [ssh.value('Hits_sTGC_globalPositionZ',1000,7000.0,8000.0,idx) for idx in indicesEoCpSectorsLayer]
         lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
         lsteps += [sh.xyMap(stslp, indices=idx, xLo=-2.0,xHi=+2.0, yLo=-1500.0,yHi=+1500.0)
                    for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.rho(stsp, 250, 0.0, 5000.0, idx) for idx in indicesEoCpSectorsLayer]
 
         return lsteps
 
