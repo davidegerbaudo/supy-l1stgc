@@ -37,3 +37,7 @@ class xyMap(analysisStep) :
 class rho(steps.histos.value) :
     def wrapName(self) : return ".rho"
     def wrap(self,val) : return val.rho()
+#___________________________________________________________
+class eta(steps.histos.value) :
+    def wrapName(self) : return ".eta"
+    def wrap(self,val) : return val.eta()
