@@ -1,6 +1,6 @@
 from supy import wrappedChain,utils,calculables,utils
 import ROOT as r
-import math
+import collections, math
 
 #___________________________________________________________
 class IndicesFilteredOnSector(wrappedChain.calculable) :
@@ -187,7 +187,36 @@ class Pivot(wrappedChain.calculable) :
     def update(self, _) :
         self.value = [sp or lp for sp,lp in zip(self.source[self.SmallPivot], self.source[self.LargePivot])]
 #__________________________________________________________
-
+class LayersPerWedge(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'LayersPerWedge'.join(self.fixes)
+    def __init__(self, collection = None) :
+        # a wedge is defined by a sector and P/C
+        self.fixes = collection
+        self.stash(['layer','sectorNumber','Pivot','Confirm'])
+    def update(self, _) :
+        layersPerWedge = collections.defaultdict(list)
+        layers   = self.source[self.layer]
+        sectors  = self.source[self.sectorNumber]
+        pivots   = self.source[self.Pivot]
+        confirms = self.source[self.Confirm]
+        for l,s,p,c in zip(layers, sectors, pivots, confirms) :
+            assert p!=c,"Must be either pivot or confirm"
+            layersPerWedge["S%d%s"%(s, 'P' if p else 'C')].append(l)
+        self.value = dict([(k,set(v)) for k,v in layersPerWedge.iteritems()])
+#__________________________________________________________
+class BasicWedgeTrigger(wrappedChain.calculable) :
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '', minNlayers = 3, label = '') :
+        self.minNlayers = minNlayers
+        self.label = "BasicWedgeTrigger%dL"%minNlayers if not label else label
+        self.fixes = collection
+        self.stash(['LayersPerWedge'])
+    def update(self, _) :
+        layersPerWedge = self.source[self.LayersPerWedge]
+        self.value = any([len(s) >= self.minNlayers for s in layersPerWedge.values()])
+#__________________________________________________________
 
 
 #
