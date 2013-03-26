@@ -1,6 +1,6 @@
 from supy import wrappedChain,utils,calculables,utils
 import ROOT as r
-
+import math
 
 #___________________________________________________________
 class IndicesFilteredOnSector(wrappedChain.calculable) :
@@ -50,7 +50,7 @@ class Indices(wrappedChain.calculable) :
                          'mask',
                          'stripNumber',
                          'wireNumber',] \
-                       + ['Pos','LocPos','Pivot','Confirm']
+                       + ['Pos','LocPos','SecLocPos','Pivot','Confirm']
 
                    )
         self.moreName = ';'.join(filter(lambda x:x,
@@ -101,6 +101,29 @@ class LocPos(wrappedChain.calculable) :
         ys = self.source[self.localPositionY]
         zs = self.source[self.localPositionZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
+#__________________________________________________________
+class SecLocPos(wrappedChain.calculable) :
+    "Position in the local coordinates within the Sector (wrt. the sector point of symmetry)"
+    @property
+    def name(self) : return 'SecLocPos'.join(self.fixes)
+    def __init__(self, collection) :
+        self.fixes = collection
+        self.stash(['sectorNumber'] + ["globalPosition%s"%v for v in ['X','Y','Z']])
+        self.pv3 = utils.root.PositionV
+    def update(self, _) :
+        xs  = self.source[self.globalPositionX]
+        ys  = self.source[self.globalPositionY]
+        zs  = self.source[self.globalPositionZ]
+        sns = self.source[self.sectorNumber]
+        sectorDphi = 2.0*math.pi/16.
+        def midSectorPhi(sec) : return (sec-1)*sectorDphi # sector N starts from 1
+        targetPhi = midSectorPhi(5) # sector 5 is the one centered on the y axis
+        def rotationAngle(sec) : return midSectorPhi(sec) - targetPhi
+        repv = r.Math.RhoEtaPhiVector
+        vsXyz = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
+        vsRep = [repv(v.rho(), v.eta(), v.phi()).SetPhi(v.phi() - (midSectorPhi(s)-targetPhi))
+                 for v,s in zip(vsXyz, sns)]
+        self.value = [self.pv3(v.x(),v.y(),v.z()) for v in vsRep]
 #__________________________________________________________
 class GenericPivotConfirm(wrappedChain.calculable) :
     "Used to emulate the pivot confirm bit; will be dropped once we have this piece of info from the geometry"
