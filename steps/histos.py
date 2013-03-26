@@ -1,6 +1,6 @@
 #import copy,array,os,collections
 #import ROOT as r
-from supy import analysisStep#,utils
+from supy import analysisStep, steps#,utils
 
 #___________________________________________________________
 class xyMap(analysisStep) :
@@ -34,3 +34,6 @@ class xyMap(analysisStep) :
                            (self.nX, self.nY), (self.xLo, self.yLo), (self.xHi, self.yHi),
                            title=self.title)
 #___________________________________________________________
+class rho(steps.histos.value) :
+    def wrapName(self) : return ".rho"
+    def wrap(self,val) : return val.rho()
