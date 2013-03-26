@@ -17,14 +17,15 @@ class VertexPosition(wrappedChain.calculable) :
 #___________________________________________________________
 class Indices(wrappedChain.calculable) :
     @property
-    def name(self) : return "GenIndices_" + self.label
+    def name(self) : return "GenIndices_" + (self.label if self.label else '')
     def __init__(self, collection=('TruthParticle_',''),
                  label = None, pdgs = [], status = []) :
         self.label = label
         self.PDGs = frozenset(pdgs)
         self.status = frozenset(status)
         self.fixes = collection
-        self.stash(['Pt','Eta','Phi','E','M','Pdg','Status','Production_vertex_id','End_vertex_id'])
+        self.stash(['Pt','Eta','Phi','E','M','Pdg','Status','Production_vertex_id','End_vertex_id']
+                   +['P4'])
         self.moreName = "; ".join(["pdgId in %s" %str(list(self.PDGs)),
                                    "status in %s"%str(list(self.status)),
                                    ])
@@ -39,4 +40,17 @@ class Indices(wrappedChain.calculable) :
 
 class truthIndices(Indices) :
     @property
-    def name(self) : return "truthIndices" + self.label
+    def name(self) : return "truthIndices" + (self.label if self.label else '')
+#__________________________________________________________
+class P4(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'P4'.join(self.fixes)
+    def __init__(self, collection) :
+        self.fixes = collection
+        self.stash(['Pt','Eta','Phi','M'])
+        self.lv = utils.root.LorentzV
+    def update(self, _) :
+        self.value = [self.lv(pt,eta,phi,m) for pt,eta,phi,m in zip(self.source[self.Pt],
+                                                                    self.source[self.Eta],
+                                                                    self.source[self.Phi],
+                                                                    self.source[self.M])]
