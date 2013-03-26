@@ -4,8 +4,8 @@ import calculables, steps, samples
 class stgcHitLook(supy.analysis) :
 
     def parameters(self) :
-        fields =                    [ 'stgcSimhit',     ]
-        objects =  dict(zip(fields, [('Hits_sTGC_',''), ]))
+        fields =                    [ 'stgcSimhit',     'truthPart']
+        objects =  dict(zip(fields, [('Hits_sTGC_',''), ('TruthParticle_','')]))
         return {
             'objects'  : objects,
             'allSectors' : range(1, 16+1),
@@ -14,9 +14,10 @@ class stgcHitLook(supy.analysis) :
             'allLayers' :  range(1, 4+1),
             }
     def listOfSteps(self,config) :
-        sh, ssh = steps.histos, supy.steps.histos
-        obj = config['objects']
-        stsh = obj['stgcSimhit']
+        sh, ssh, ssf = steps.histos, supy.steps.histos, supy.steps.filters
+        obj       = config['objects']
+        stsh      = obj['stgcSimhit']
+        truthPart = obj['truthPart']
         stsi = 'simhitIndices'
         stsp = 'Pos'.join(stsh)
         stslp = 'LocPos'.join(stsh)
@@ -24,10 +25,11 @@ class stgcHitLook(supy.analysis) :
 
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
-                   ssh.multiplicity('IndicesOddSector', max=50),
-                   ssh.multiplicity('IndicesEvenSector', max=50),
-                   sh.xyMap(stsp, indices='IndicesOddSector'),
-                   sh.xyMap(stsp, indices='IndicesEvenSector'),
+                   # supy.steps.histos.multiplicity('truthIndices', max=10),
+                   # ssh.multiplicity('IndicesOddSector', max=50),
+                   # ssh.multiplicity('IndicesEvenSector', max=50),
+                   # sh.xyMap(stsp, indices='IndicesOddSector'),
+                   # sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
         allLayers = config['allLayers']
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
@@ -39,19 +41,29 @@ class stgcHitLook(supy.analysis) :
         # lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.xyMap(stsslp, indices=idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh)]
-                                                + [('BasicWedgeTrigger'+nl+'L').join(stsh)
-                                                   for nl in ['3','4']])]
+        lsteps += [ssf.multiplicity('truthIndices', min=1)] # need at least one truth muon
+        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
+                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
+                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
+        lsteps += [ssf.value('BasicWedgeTrigger3L'.join(stsh), min=1)]
+        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
+                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
+                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
+        lsteps += [ssf.value('BasicWedgeTrigger4L'.join(stsh), min=1)]
+        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
+                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
+                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
 
         return lsteps
 
     def listOfCalculables(self,config) :
 
-        obj = config['objects']
-        simhit = obj['stgcSimhit']
+        obj       = config['objects']
+        simhit    = obj['stgcSimhit']
+        truthPart = obj['truthPart']
         cs = calculables.stgc
         calcs  = supy.calculables.zeroArgs(supy.calculables)
-        calcs += [calculables.truth.truthIndices(label=''),
+        calcs += [calculables.truth.truthIndices(pdgs=[+13, -13]),
                   cs.simhitIndices(label=''),
                   ]
         allSectors, allLayers = config['allSectors'], config['allLayers']
@@ -72,6 +84,7 @@ class stgcHitLook(supy.analysis) :
                   for pck, pcv in zip(['Pivot', 'Confirm'], [True,        False     ])
                   for l in allLayers]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
+        calcs += supy.calculables.fromCollections(calculables.truth, [truthPart])
         calcs += [cs.BasicWedgeTrigger(simhit, nl) for nl in [3,4]]
 
         return calcs
@@ -81,7 +94,7 @@ class stgcHitLook(supy.analysis) :
 
     def listOfSamples(self,config) :
         test = True #False
-        nEventsMax=10 if test else None
+        nEventsMax=1000 if test else None
         return (supy.samples.specify(names='JochenSingleMuPos', color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
                 )
 
