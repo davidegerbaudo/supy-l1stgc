@@ -20,6 +20,8 @@ class stgcHitLook(supy.analysis) :
         stsi = 'simhitIndices'
         stsp = 'Pos'.join(stsh)
         stslp = 'LocPos'.join(stsh)
+        stsslp = 'SecLocPos'.join(stsh)
+
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
                    ssh.multiplicity('IndicesOddSector', max=50),
@@ -27,7 +29,6 @@ class stgcHitLook(supy.analysis) :
                    sh.xyMap(stsp, indices='IndicesOddSector'),
                    sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
-#        lsteps += [ssh.multiplicity("IndicesSector%d"%s, 50) for s in config['allSectors']]
         allLayers = config['allLayers']
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
                               for s in config['allSectors'] for l in allLayers]
@@ -37,8 +38,7 @@ class stgcHitLook(supy.analysis) :
                                    for l in allLayers]
         lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
         lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
-        # lsteps += [sh.xyMap(stslp, indices=idx, xLo=-2.0,xHi=+2.0, yLo=-1500.0,yHi=+1500.0)
-        #            for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.xyMap(stsslp, indices=idx) for idx in indicesEoCpSectorsLayer]
 
         return lsteps
 
