@@ -72,6 +72,8 @@ class phiVsEta(value2d):
     def wrapY(self, val) : return val.phi()
 #___________________________________________________________
 class phiVsTheta(value2d):
+    def __init__(self, var=('',''), indices='', index = None, N=(100,100),lo=(+0.10,-pi),hi=(+0.75,+pi),title='',w=None) :
+        super(phiVsTheta, self).__init__(var, indices, index, N, lo, hi, title, w)
     def wrapNameX(self) : return '.theta'
     def wrapNameY(self) : return '.phi'
     def wrapX(self, val) : return val.theta()
