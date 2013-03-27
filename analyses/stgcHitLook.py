@@ -1,5 +1,6 @@
 import supy, ROOT as r
 import calculables, steps, samples
+import math
 
 class stgcHitLook(supy.analysis) :
 
@@ -22,6 +23,9 @@ class stgcHitLook(supy.analysis) :
         stsp = 'Pos'.join(stsh)
         stslp = 'LocPos'.join(stsh)
         stsslp = 'SecLocPos'.join(stsh)
+        truthP4 = 'P4'.join(truthPart)
+        truthIdx = 'truthIndices'
+        pi = math.pi
 
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
@@ -38,21 +42,26 @@ class stgcHitLook(supy.analysis) :
                                    for eo in ['Even','Odd']
                                    for cp in ['Confirm','Pivot']
                                    for l in allLayers]
-        # lsteps += [sh.xyMap(stsp, indices=idx) for idx in indicesEoCpSectorsLayer]
-        # lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
-        # lsteps += [sh.xyMap(stsslp, indices=idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [ssf.multiplicity('truthIndices', min=1)] # need at least one truth muon
-        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
-                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
-                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
-        lsteps += [ssf.value('BasicWedgeTrigger3L'.join(stsh), min=1)]
-        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
-                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
-                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
+        lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.yVsX((stsslp, stsslp), indices=idx) for idx in indicesEoCpSectorsLayer]
+        lsteps += [ssf.multiplicity(truthIdx, min=1)] # need at least one truth muon
+        lsteps += [sh.phiVsEta((truthP4, truthP4), indices=truthIdx)]
+        lsteps += [sh.phiVsEta((truthP4, truthP4), indices=truthIdx)]
+        lsteps += [sh.phiVsTheta((truthP4, truthP4), indices=truthIdx)]
+
+        lsteps += [ssh.eta(truthP4, 100, 1.0, 3.0, truthIdx, 0),
+                   ssh.pt(truthP4,  100, 0.0*1e3, 100.0*1.e3, truthIdx, 0),
+                   sh.phiVsEta((truthP4, truthP4), indices=truthIdx, index=0)]
+        lsteps += [ssf.value('BasicWedgeTrigger3L'.join(stsh), min=1).invert()]
+        lsteps += [ssh.eta(truthP4, 100, 1.0, 3.0, truthIdx, 0),
+                   ssh.pt(truthP4,  100, 0.0*1e3, 100.0*1.e3, truthIdx, 0),
+                   sh.phiVsEta((truthP4, truthP4), indices=truthIdx, index=0)]
         lsteps += [ssf.value('BasicWedgeTrigger4L'.join(stsh), min=1)]
-        lsteps += [ssh.eta('P4'.join(truthPart), 100, 1.0, 3.0, 'truthIndices', 0),
-                   ssh.pt('P4'.join(truthPart),  100, 0.0*1e3, 100.0*1.e3, 'truthIndices', 0),
-                   sh.etaPhiMap('P4'.join(truthPart), indices='truthIndices', index=0)]
+        lsteps += [ssh.eta(truthP4, 100, 1.0, 3.0, truthIdx, 0),
+                   ssh.pt(truthP4,  100, 0.0*1e3, 100.0*1.e3, truthIdx, 0),
+                   sh.phiVsEta((truthP4, truthP4), indices=truthIdx, index=0)]
 
         return lsteps
 
