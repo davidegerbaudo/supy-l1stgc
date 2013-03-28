@@ -174,18 +174,20 @@ class Confirm(wrappedChain.calculable) :
     def name(self) : return 'Confirm'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
-        self.stash(['SmallConfirm','LargeConfirm'])
+        self.stash(['wedgeType'])
     def update(self, _) :
-        self.value = [sc or lc for sc,lc in zip(self.source[self.SmallConfirm], self.source[self.LargeConfirm])]
+        confirm = 1 # see sTGCenumeration.h
+        self.value = [wt==confirm for wt in self.source[self.wedgeType]]
 #__________________________________________________________
 class Pivot(wrappedChain.calculable) :
     @property
     def name(self) : return 'Pivot'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
-        self.stash(['SmallPivot','LargePivot'])
+        self.stash(['wedgeType'])
     def update(self, _) :
-        self.value = [sp or lp for sp,lp in zip(self.source[self.SmallPivot], self.source[self.LargePivot])]
+        pivot = 0 # see sTGCenumeration.h
+        self.value = [wt==pivot for wt in self.source[self.wedgeType]]
 #__________________________________________________________
 class LayersPerWedge(wrappedChain.calculable) :
     @property
