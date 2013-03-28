@@ -46,13 +46,6 @@ class stgcHitLook(supy.analysis) :
         lsteps += [sh.phiVsEta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         lsteps += [sh.phiVsTheta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
 
-        # lsteps += [supy.steps.printer.printstuff([s])
-        #            for s in [p.join(stsh) for p in ['Pivot','Confirm',
-        #                                             'SmallPivot','SmallConfirm',
-        #                                             'LargePivot','LargeConfirm',
-        #                                             ]]]
-        lsteps += [ssh.value('globalPositionZ'.join(stsh),1000,7000.0,8000.0, indices=idx)
-                   for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
