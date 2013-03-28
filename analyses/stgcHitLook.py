@@ -48,8 +48,9 @@ class stgcHitLook(supy.analysis) :
 
         lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh),])]
         lsteps += [supy.steps.printer.printstuff(['WedgesWith3ActiveLayers'.join(stsh),
-
                                                   'WedgesWith4ActiveLayers'.join(stsh)])]
+        lsteps += [supy.steps.printer.printstuff(['Any3LayersWedgeTrigger'.join(stsh),
+                                                  'Any4LayersWedgeTrigger'.join(stsh)])]
 
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
