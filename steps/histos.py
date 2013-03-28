@@ -5,12 +5,12 @@ from math import pi
 
 #___________________________________________________________
 class rho(steps.histos.value) :
-    def wrapName(self) : return ".rho"
-    def wrap(self,val) : return val.rho()
+    def wrapName(self) : return ".rho",
+    def wrap(self,val) : return val[0].rho()
 #___________________________________________________________
 class eta(steps.histos.value) :
-    def wrapName(self) : return ".eta"
-    def wrap(self,val) : return val.eta()
+    def wrapName(self) : return ".eta",
+    def wrap(self,val) : return val[0].eta()
 #___________________________________________________________
 class value2d(analysisStep) :
     def __init__(self, var=('',''),
@@ -54,27 +54,21 @@ class value2d(analysisStep) :
     def wrapX(self, val) : return val
     def wrapY(self, val) : return val
 #___________________________________________________________
-class yVsX(value2d):
-    def __init__(self, var=('',''), indices='', index = None, N=(500,500),lo=(-5000.0,-5000.0),hi=(+5000.0,+5000.0),title='',w=None) :
-        super(yVsX, self).__init__(var, indices, index, N, lo, hi, title, w)
+class yVsX(steps.histos.value) :
+    def __init__(self, var=('',''), indices='', index = None, N=(500,500),low=(-5000.0,-5000.0),up=(+5000.0,+5000.0),title='',w=None) :
+        super(yVsX, self).__init__(var, N, low, up,  indices, index, title, w)
 
-    def wrapNameX(self) : return '.x'
-    def wrapNameY(self) : return '.y'
-    def wrapX(self, val) : return val.x()
-    def wrapY(self, val) : return val.y()
+    def wrapName(self) : return ('.x', '.y')
+    def wrap(self, val) : return (val[0].x(), val[1].y())
 #___________________________________________________________
-class phiVsEta(value2d):
+class phiVsEta(steps.histos.value):
     def __init__(self, var=('',''), indices='', index = None, N=(100,100),lo=(+1.0,-pi),hi=(+3.0,+pi),title='',w=None) :
-        super(phiVsEta, self).__init__(var, indices, index, N, lo, hi, title, w)
-    def wrapNameX(self) : return '.eta'
-    def wrapNameY(self) : return '.phi'
-    def wrapX(self, val) : return val.eta()
-    def wrapY(self, val) : return val.phi()
+        super(phiVsEta, self).__init__(var, N, lo, hi, indices, index, title, w)
+    def wrapName(self) : return ('.eta', '.phi')
+    def wrap(self, val) : return (val[0].eta(), val[1].phi())
 #___________________________________________________________
-class phiVsTheta(value2d):
+class phiVsTheta(steps.histos.value):
     def __init__(self, var=('',''), indices='', index = None, N=(100,100),lo=(+0.10,-pi),hi=(+0.75,+pi),title='',w=None) :
-        super(phiVsTheta, self).__init__(var, indices, index, N, lo, hi, title, w)
-    def wrapNameX(self) : return '.theta'
-    def wrapNameY(self) : return '.phi'
-    def wrapX(self, val) : return val.theta()
-    def wrapY(self, val) : return val.phi()
+        super(phiVsTheta, self).__init__(var, N, lo, hi, indices, index, title, w)
+    def wrapName(self) : return ('.theta', '.phi')
+    def wrap(self, val) : return (val[0].theta(), val[1].phi())
