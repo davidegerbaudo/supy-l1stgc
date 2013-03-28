@@ -195,16 +195,17 @@ class LayersPerWedge(wrappedChain.calculable) :
     def __init__(self, collection = None) :
         # a wedge is defined by a sector and P/C
         self.fixes = collection
-        self.stash(['layer','sectorNumber','Pivot','Confirm'])
+        self.stash(['layer','sectorNumber','Pivot','Confirm','globalPositionZ'])
     def update(self, _) :
         layersPerWedge = collections.defaultdict(list)
         layers   = self.source[self.layer]
         sectors  = self.source[self.sectorNumber]
         pivots   = self.source[self.Pivot]
         confirms = self.source[self.Confirm]
-        for l,s,p,c in zip(layers, sectors, pivots, confirms) :
+        zs       = self.source[self.globalPositionZ]
+        for l,s,p,c,z in zip(layers, sectors, pivots, confirms, zs) :
             assert p!=c,"Must be either pivot or confirm"
-            layersPerWedge["S%d%s"%(s, 'P' if p else 'C')].append(l)
+            layersPerWedge["S%d%s%s"%(s, 'P' if p else 'C', 'A' if z > 0. else 'C')].append(l)
         self.value = dict([(k,set(v)) for k,v in layersPerWedge.iteritems()])
 #__________________________________________________________
 class BasicWedgeTrigger(wrappedChain.calculable) :
