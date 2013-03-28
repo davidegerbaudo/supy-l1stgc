@@ -215,7 +215,7 @@ class LayersPerWedge(wrappedChain.calculable) :
     @property
     def name(self) : return 'LayersPerWedge'.join(self.fixes)
     def __init__(self, collection = None) :
-        # a wedge is defined by a sector and P/C
+        # a wedge is defined by  sector, Pivot/Confirm, and side
         self.fixes = collection
         self.stash(['layer','sectorNumber','PivotOrConfirm','Side'])
     def update(self, _) :
