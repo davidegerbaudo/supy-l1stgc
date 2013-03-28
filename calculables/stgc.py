@@ -189,23 +189,32 @@ class Pivot(wrappedChain.calculable) :
         pivot = 0 # see sTGCenumeration.h
         self.value = [wt==pivot for wt in self.source[self.wedgeType]]
 #__________________________________________________________
+class PivotOrConfirm(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'PivotOrConfirm'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(['Pivot','Confirm'])
+    def update(self, _) :
+        ps, cs = self.source[self.Pivot], self.source[self.Confirm]
+        assert not any(p==c for p,c in zip(ps,cs)),"Hits must be either Pivot or Confirm"
+        self.value = ['P' if p else 'C' for p in ps]
+#__________________________________________________________
 class LayersPerWedge(wrappedChain.calculable) :
     @property
     def name(self) : return 'LayersPerWedge'.join(self.fixes)
     def __init__(self, collection = None) :
         # a wedge is defined by a sector and P/C
         self.fixes = collection
-        self.stash(['layer','sectorNumber','Pivot','Confirm','globalPositionZ'])
+        self.stash(['layer','sectorNumber','PivotOrConfirm','globalPositionZ'])
     def update(self, _) :
         layersPerWedge = collections.defaultdict(list)
         layers   = self.source[self.layer]
         sectors  = self.source[self.sectorNumber]
-        pivots   = self.source[self.Pivot]
-        confirms = self.source[self.Confirm]
+        pcs      = self.source[self.PivotOrConfirm]
         zs       = self.source[self.globalPositionZ]
-        for l,s,p,c,z in zip(layers, sectors, pivots, confirms, zs) :
-            assert p!=c,"Must be either pivot or confirm"
-            layersPerWedge["S%d%s%s"%(s, 'P' if p else 'C', 'A' if z > 0. else 'C')].append(l)
+        for l,s,pc,z in zip(layers, sectors, pcs, zs) :
+            layersPerWedge["S%d%s%s"%(s, pc, 'A' if z > 0. else 'C')].append(l)
         self.value = dict([(k,set(v)) for k,v in layersPerWedge.iteritems()])
 #__________________________________________________________
 class BasicWedgeTrigger(wrappedChain.calculable) :
