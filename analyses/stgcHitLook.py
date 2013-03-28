@@ -46,6 +46,11 @@ class stgcHitLook(supy.analysis) :
         lsteps += [sh.phiVsEta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         lsteps += [sh.phiVsTheta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
 
+        lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh),])]
+        lsteps += [supy.steps.printer.printstuff(['WedgesWith3ActiveLayers'.join(stsh),
+
+                                                  'WedgesWith4ActiveLayers'.join(stsh)])]
+
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.eta(stsp, 100, 1.0, 3.0, idx) for idx in indicesEoCpSectorsLayer]
