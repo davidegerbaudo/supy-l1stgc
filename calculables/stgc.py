@@ -239,8 +239,7 @@ class WedgesWithNActiveLayers(wrappedChain.calculable) :
         self.stash(['LayersPerWedge'])
     def update(self, _) :
         layersPerWedge = self.source[self.LayersPerWedge]
-        self.value = [w for w,l in layersPerWedge.iteritems() if l==self.nlayers]
-
+        self.value = [w for w,l in layersPerWedge.iteritems() if self.nlayers==len(l)]
 #__________________________________________________________
 class WedgesWith3ActiveLayers(WedgesWithNActiveLayers) :
     def __init__(self, collection = '') :
