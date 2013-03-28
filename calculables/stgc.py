@@ -249,17 +249,27 @@ class WedgesWith4ActiveLayers(WedgesWithNActiveLayers) :
     def __init__(self, collection = '') :
         super(WedgesWith4ActiveLayers, self).__init__(collection, 4)
 #__________________________________________________________
-class BasicWedgeTrigger(wrappedChain.calculable) :
+class Any3LayersWedgeTrigger(wrappedChain.calculable) :
+    "Trigger if there is at least one wedge with at least 3 active layers"
     @property
     def name(self) : return self.label.join(self.fixes)
-    def __init__(self, collection = '', minNlayers = 3, label = '') :
-        self.minNlayers = minNlayers
-        self.label = "BasicWedgeTrigger%dL"%minNlayers if not label else label
+    def __init__(self, collection = '') :
+        self.label = "Any3LayersWedgeTrigger"
         self.fixes = collection
-        self.stash(['LayersPerWedge'])
+        self.stash(['WedgesWith3ActiveLayers','WedgesWith4ActiveLayers'])
     def update(self, _) :
-        layersPerWedge = self.source[self.LayersPerWedge]
-        self.value = any([len(s) >= self.minNlayers for s in layersPerWedge.values()])
+        self.value = any(self.source[self.WedgesWith3ActiveLayers] + self.source[self.WedgesWith4ActiveLayers])
+#__________________________________________________________
+class Any4LayersWedgeTrigger(wrappedChain.calculable) :
+    "Trigger if there is at least one wedge with at least 4 active layers"
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = "Any4LayersWedgeTrigger"
+        self.fixes = collection
+        self.stash(['WedgesWith4ActiveLayers'])
+    def update(self, _) :
+        self.value = any(self.source[self.WedgesWith4ActiveLayers])
 #__________________________________________________________
 
 
