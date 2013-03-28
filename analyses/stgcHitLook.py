@@ -103,7 +103,6 @@ class stgcHitLook(supy.analysis) :
                   for l in allLayers]
         calcs += supy.calculables.fromCollections(cs, [simhit, ])
         calcs += supy.calculables.fromCollections(calculables.truth, [truthPart])
-        calcs += [cs.BasicWedgeTrigger(simhit, nl) for nl in [3,4]]
 
         return calcs
 
