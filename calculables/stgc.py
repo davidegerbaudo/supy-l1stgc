@@ -228,6 +228,28 @@ class LayersPerWedge(wrappedChain.calculable) :
             layersPerWedge["S%d%s%s"%(s, pc, side)].append(l)
         self.value = dict([(k,set(v)) for k,v in layersPerWedge.iteritems()])
 #__________________________________________________________
+class WedgesWithNActiveLayers(wrappedChain.calculable) :
+    "List of wedges that have hits in N layers"
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '', nlayers = 0, label = '') :
+        self.nlayers = nlayers
+        self.label = "WedgesWith%dActiveLayers"%nlayers if not label else label
+        self.fixes = collection
+        self.stash(['LayersPerWedge'])
+    def update(self, _) :
+        layersPerWedge = self.source[self.LayersPerWedge]
+        self.value = [w for w,l in layersPerWedge.iteritems() if l==self.nlayers]
+
+#__________________________________________________________
+class WedgesWith3ActiveLayers(WedgesWithNActiveLayers) :
+    def __init__(self, collection = '') :
+        super(WedgesWith3ActiveLayers, self).__init__(collection, 3)
+#__________________________________________________________
+class WedgesWith4ActiveLayers(WedgesWithNActiveLayers) :
+    def __init__(self, collection = '') :
+        super(WedgesWith4ActiveLayers, self).__init__(collection, 4)
+#__________________________________________________________
 class BasicWedgeTrigger(wrappedChain.calculable) :
     @property
     def name(self) : return self.label.join(self.fixes)
