@@ -165,7 +165,7 @@ def detectorNumber2str(dn) :
     return "D%d" % dn
 
 def padPhiSize(detectorNumber) :
-    return PAD_PHI_DIVISION if detectorNumber in [0,1] else PAD_PHI_DIVISION/ PAD_PHI_SUBDIVISION
+    return PAD_PHI_DIVISION / PAD_PHI_SUBDIVISION if detectorNumber in [0,1] else PAD_PHI_DIVISION
 
 def padShift(pivotConfirm, layer) :
     return PHIPAD_SHIFT[pivotConfirm2str(pivotConfirm)][layer]
