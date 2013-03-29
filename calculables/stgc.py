@@ -1,6 +1,7 @@
 from supy import wrappedChain,utils,calculables,utils
 import ROOT as r
 import collections, math
+import stgcGeometry as geo
 
 #___________________________________________________________
 class IndicesFilteredOnSector(wrappedChain.calculable) :
@@ -271,3 +272,82 @@ class Any4LayersWedgeTrigger(wrappedChain.calculable) :
     def update(self, _) :
         self.value = any(self.source[self.WedgesWith4ActiveLayers])
 #__________________________________________________________
+class PadLocalIndices(wrappedChain.calculable) :
+    "Local (ieta,iphi) indices of a pad within a singlet"
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = 'PadLocalIndices'
+        self.fixes = collection
+        self.stash(['SecLocPos','sectorNumber','detectorNumber','wedgeId','wedgeType','layer'])
+    def update(self, _) :
+        locPoss = self.source[self.SecLocPos]
+        secNums = self.source[self.sectorNumber]
+        detNums = self.source[self.detectorNumber]
+        lss     = self.source[self.wedgeId]              # Large/Small
+        pcs     = self.source[self.wedgeType]            # Pivot/Conf
+        layers  = [i-1 for i in self.source[self.layer]] # [1,..,4] -> [0,...,3]
+        assert all(dn in [0,1,2,3] for dn in detNums),"invalid Detector numbers %s"%str(detNums)
+        assert all(ls in [0,1] and pc in [0,1] for ls,pc in zip(lss,pcs)),"invalid wedgeId/type %s, %s"%(str(lss), str(pcs))
+        wedTyps = ['_'.join([geo.largeSmall2str(ls), geo.pivotConfirm2str(pc)])
+                   for ls,pc in zip(lss, pcs)]
+        posPars = [(p.y(), p.phi()) for p in locPoss]
+        padPars = [(geo.padPhiSize(d),               geo.padShift(pc,l),
+                    geo.padLeftmostColumn(wt, d, l), geo.padRightmostColumn(wt, d, l),
+                    geo.padRow0(wt, d, l),           geo.padHeight(wt, d, l),
+                    geo.padRows(wt, d, l))
+                   for pc, wt, d, l in zip(pcs, wedTyps, detNums, layers)]
+
+        def phiOrigin(padShift, padSize) : return padShift * padSize
+        def phiMpiPi2ZeroTwoPi(phi) : return phi if phi > 0. else phi + 2.0*math.pi
+        def padIphi(deltaPhi, padSize) : return math.floor(deltaPhi/padSize)
+        def adjustPadIphi(padIphi, leftmostColumn, rightmostColumn) :
+            pIp, iLc, iRc = padIphi, leftmostColumn, rightmostColumn
+            if   pIp<0.0 and pIp<iLc : return iLc
+            elif pIp>0.0 and pIp>iRc : return iRc
+            else                     : return pIp
+        def localHeight(globY, lowEdgeY) : return globY - lowEdgeY
+        def padIeta(localH, padHeight) : return int(localH / padHeight)
+        def adjustPadIeta(padIeta, padRows) : return padRows if padIeta>padRows else padIeta
+        self.value = [(adjustPadIeta(padIeta(localHeight(y, pR0), pH), pR),
+                       adjustPadIphi(padIphi(phiMpiPi2ZeroTwoPi(phi) - phiOrigin(pSh, pSi), pSi),
+                                     pLm, pRm))
+                      for (y, phi), (pSi, pSh, pLm, pRm, pR0, pH, pR) in zip(posPars, padPars)]
+#__________________________________________________________
+
+# void NSW_sTGCHitPadLocation::get_sTGCHitPadEtaPhi(TVector3 pos, int sectorNumber,  int detNum,
+#                           int wedgeId, int WedgeType, int detLayer,
+#                           int& padEta, int& padPhi,
+#                           int& padLogicalEta0, int& padLogicalEta1,
+#                           int& padLogicalPhi0, int& padLogicalPhi1)
+# {
+#     //initialize indices
+#     padEta = -999;
+#     padPhi = -999;
+
+#     detLayer -= 1;
+
+
+#     //rotate the sector to sector 5 position
+#     float sectorPhi = sTGC_MidSectorPhi[sectorNumber];
+#     float rotationPhi = TMath::Pi() * (sTGC_MidSectorPhi[5] - sectorPhi ) / 180.;
+#     pos.RotateZ(rotationPhi);
+
+#     double phiPadSize = (detNum==0 || detNum==1 ? PAD_PHI_DIVISION : PAD_PHI_DIVISION / PAD_PHI_SUBDIVISION);
+#     double phiShift = PHIPAD_SHIFT[WedgeType][detLayer];
+#     double phiOrigin = phiShift * phiPadSize ;
+
+#     double phi = ( pos.Phi() > 0 ? pos.Phi() : pos.Phi() + 2 * TMath::Pi());
+#     double deltaPhi = phi - phiOrigin;
+#     padPhi = TMath::Floor(deltaPhi / phiPadSize);
+#     if(padPhi < 0 && padPhi < INDEX_LEFTMOST_COL[WedgeType][detNum][detLayer]) padPhi = INDEX_LEFTMOST_COL[WedgeType][detNum][detLayer];
+#     else if(padPhi > 0 && padPhi > INDEX_RIGHTMOST_COL[WedgeType][detNum][detLayer]) padPhi = INDEX_RIGHTMOST_COL[WedgeType][detNum][detLayer];
+
+#     //Calculate H = global y - sector H_0 (H_PAD_ROW_0[N_WEDGE_TYPES][N_DETECTORS][N_LAYERS])
+#     float y = pos.Y();
+#     //H_PAD_ROW_0[STGC_TYPES][STGC_DETECTORS][STGC_LAYERS]
+#     float H_0 = H_PAD_ROW_0[WedgeType][detNum][detLayer];
+#     float H = y - H_0;
+#     //deduce H_index
+#     padEta = H / PAD_HEIGHT[WedgeType][detNum][detLayer];
+#     if(padEta > PAD_ROWS[WedgeType][detNum][detLayer]) padEta = PAD_ROWS[WedgeType][detNum][detLayer];
