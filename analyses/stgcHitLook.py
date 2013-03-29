@@ -43,14 +43,17 @@ class stgcHitLook(supy.analysis) :
                                    for cp in ['Confirm','Pivot']
                                    for l in allLayers]
 
-        lsteps += [sh.phiVsEta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.phiVsTheta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.phiVsEta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.phiVsTheta((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
 
-        lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh),])]
-        lsteps += [supy.steps.printer.printstuff(['WedgesWith3ActiveLayers'.join(stsh),
-                                                  'WedgesWith4ActiveLayers'.join(stsh)])]
-        lsteps += [supy.steps.printer.printstuff(['Any3LayersWedgeTrigger'.join(stsh),
-                                                  'Any4LayersWedgeTrigger'.join(stsh)])]
+        # lsteps += [supy.steps.printer.printstuff(['LayersPerWedge'.join(stsh),])]
+        # lsteps += [supy.steps.printer.printstuff(['WedgesWith3ActiveLayers'.join(stsh),
+        #                                           'WedgesWith4ActiveLayers'.join(stsh)])]
+        # lsteps += [supy.steps.printer.printstuff(['Any3LayersWedgeTrigger'.join(stsh),
+        #                                           'Any4LayersWedgeTrigger'.join(stsh)])]
+        # lsteps += [supy.steps.printer.printstuff(['PadLocalIndices'.join(stsh)])]
+        lsteps += [sh.padIndexAvg(stsh,idx,ieta=True) for idx in indicesEoCpSectorsLayer]
+        lsteps += [sh.padIndexAvg(stsh,idx,iphi=True) for idx in indicesEoCpSectorsLayer]
 
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
@@ -111,7 +114,7 @@ class stgcHitLook(supy.analysis) :
         return [samples.localsinglemu,]
 
     def listOfSamples(self,config) :
-        test = True #False
+        test = False #True
         nEventsMax=1000 if test else None
         return (supy.samples.specify(names='JochenSingleMuPos', color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
                 )
@@ -124,4 +127,5 @@ class stgcHitLook(supy.analysis) :
         supy.plotter(org,
                      pdfFileName = self.pdfFileName(org.tag),
                      doLog=False,
+                     blackList = ['cnt_.*', 'cum_.*'],
                      ).plotAll()
