@@ -300,12 +300,12 @@ class PadLocalIndices(wrappedChain.calculable) :
 
         def phiOrigin(padShift, padSize) : return padShift * padSize
         def phiMpiPi2ZeroTwoPi(phi) : return phi if phi > 0. else phi + 2.0*math.pi
-        def padIphi(deltaPhi, padSize) : return math.floor(deltaPhi/padSize)
+        def padIphi(deltaPhi, padSize) : return int(math.floor(deltaPhi/padSize))
         def adjustPadIphi(padIphi, leftmostColumn, rightmostColumn) :
             pIp, iLc, iRc = padIphi, leftmostColumn, rightmostColumn
-            if   pIp<0.0 and pIp<iLc : return iLc
-            elif pIp>0.0 and pIp>iRc : return iRc
-            else                     : return pIp
+            if   pIp<0 and pIp<iLc : return iLc
+            elif pIp>0 and pIp>iRc : return iRc
+            else                   : return pIp
         def localHeight(globY, lowEdgeY) : return globY - lowEdgeY
         def padIeta(localH, padHeight) : return int(localH / padHeight)
         def adjustPadIeta(padIeta, padRows) : return padRows if padIeta>padRows else padIeta
