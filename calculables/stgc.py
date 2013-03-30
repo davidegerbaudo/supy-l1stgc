@@ -309,8 +309,9 @@ class PadLocalIndices(wrappedChain.calculable) :
         def localHeight(globY, lowEdgeY) : return globY - lowEdgeY
         def padIeta(localH, padHeight) : return int(localH / padHeight)
         def adjustPadIeta(padIeta, padRows) : return padRows if padIeta>padRows else padIeta
-        self.value = [(10+padIeta(localHeight(y, pR0), pH),
-                       10+padIphi(phiMpiPi2ZeroTwoPi(phi) - phiOrigin(pSh, pSi), pSi),
+        self.value = [(10+adjustPadIeta(padIeta(localHeight(y, pR0), pH), pR),
+                       10+adjustPadIphi(padIphi(phiMpiPi2ZeroTwoPi(phi) - phiOrigin(pSh, pSi),
+                                                pSi), pLm, pRm)
                       )
                       for (y, phi), (pSi, pSh, pLm, pRm, pR0, pH, pR) in zip(posPars, padPars)]
 #__________________________________________________________
