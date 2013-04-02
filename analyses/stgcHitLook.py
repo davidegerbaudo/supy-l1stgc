@@ -127,5 +127,5 @@ class stgcHitLook(supy.analysis) :
         supy.plotter(org,
                      pdfFileName = self.pdfFileName(org.tag),
                      doLog=False,
-                     blackList = ['cnt_.*', 'cum_.*'],
+                     blackList = ['lumiHisto','xsHisto','nJobsHisto','cnt_.*', 'cum_.*'],
                      ).plotAll()
