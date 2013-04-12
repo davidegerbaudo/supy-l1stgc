@@ -1,6 +1,7 @@
 
 # definitions from
-# https://svnweb.cern.ch/trac/atlasusr/browser/ataffard/UpgradeNSW/TrigT1sTGC/trunk/TrigT1sTGC/sTGCgeometry.h?rev=140867
+# https://svnweb.cern.ch/trac/atlasusr/browser/ataffard/UpgradeNSW/NSWAna/NSWNtuple/trunk/NSWNtuple/sTGCgeometry.h
+# NSW STGC (c) Daniel.Lellouch@cern.ch February 18, 2013
 
 #___________________________________________________________
 H1 = {
