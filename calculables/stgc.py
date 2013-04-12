@@ -281,6 +281,7 @@ class PadLocalIndices(wrappedChain.calculable) :
         self.fixes = collection
         self.stash(['SecLocPos','sectorNumber','detectorNumber','wedgeId','wedgeType','layer'])
     def update(self, _) :
+        pS5     = geo.midSectorPhi(5) # we are still working with the coord rotated to sector 5
         locPoss = self.source[self.SecLocPos]
         secNums = self.source[self.sectorNumber]
         detNums = self.source[self.detectorNumber]
@@ -292,10 +293,9 @@ class PadLocalIndices(wrappedChain.calculable) :
         wedTyps = ['_'.join([geo.largeSmall2str(ls), geo.pivotConfirm2str(pc)])
                    for ls,pc in zip(lss, pcs)]
         posPars = [(p.y(), p.phi()) for p in locPoss]
-        padPars = [(geo.padPhiSize(d),               geo.padShift(pc,l),
+        padPars = [(geo.padPhiSize(d),               geo.padPhi0(wt, d, l),
                     geo.padLeftmostColumn(wt, d, l), geo.padRightmostColumn(wt, d, l),
-                    geo.padRow0(wt, d, l),           geo.padHeight(wt, d, l),
-                    geo.padRows(wt, d, l))
+                    geo.padRow0(wt, l),              geo.padHeight(wt, d))
                    for pc, wt, d, l in zip(pcs, wedTyps, detNums, layers)]
 
         def phiOrigin(padShift, padSize) : return padShift * padSize
@@ -310,9 +310,9 @@ class PadLocalIndices(wrappedChain.calculable) :
         def padIeta(localH, padHeight) : return int(localH / padHeight)
         def adjustPadIeta(padIeta, padRows) : return padRows if padIeta>padRows else padIeta
         self.value = [(10+padIeta(localHeight(y, pR0), pH),
-                       10+padIphi(phiMpiPi2ZeroTwoPi(phi) - phiOrigin(pSh, pSi), pSi),
+                       10+padIphi(phi -pP0 - pS5 , pSi),
                       )
-                      for (y, phi), (pSi, pSh, pLm, pRm, pR0, pH, pR) in zip(posPars, padPars)]
+                      for (y, phi), (pSi, pP0, pLm, pRm, pR0, pH) in zip(posPars, padPars)]
 #__________________________________________________________
 
 # void NSW_sTGCHitPadLocation::get_sTGCHitPadEtaPhi(TVector3 pos, int sectorNumber,  int detNum,
