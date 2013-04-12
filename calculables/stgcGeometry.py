@@ -3,6 +3,7 @@
 # https://svnweb.cern.ch/trac/atlasusr/browser/ataffard/UpgradeNSW/NSWAna/NSWNtuple/trunk/NSWNtuple/sTGCgeometry.h
 # NSW STGC (c) Daniel.Lellouch@cern.ch April 9, 2013
 
+import math
 #___________________________________________________________
 H1 = {
     'SMALL_PIVOT' : {
@@ -243,4 +244,9 @@ def padRows(wedgeType, detectorNumber, layer) :
 
 def padPhi0(wedgeType, detectorNumber, layer) :
     return PAD_COL_PHI0[wedgeType][detectorNumber2str(detectorNumber)][layer]
+
+sectorDphi = 2.0*math.pi/16.
+
+def midSectorPhi(sec) : return (sec-1)*sectorDphi # sector N starts from 1
+
 #___________________________________________________________

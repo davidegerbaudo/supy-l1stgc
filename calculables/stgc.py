@@ -116,8 +116,8 @@ class SecLocPos(wrappedChain.calculable) :
         ys  = self.source[self.globalPositionY]
         zs  = self.source[self.globalPositionZ]
         sns = self.source[self.sectorNumber]
-        sectorDphi = 2.0*math.pi/16.
-        def midSectorPhi(sec) : return (sec-1)*sectorDphi # sector N starts from 1
+        sectorDphi = geo.sectorDphi
+        midSectorPhi = geo.midSectorPhi
         targetPhi = midSectorPhi(5) # sector 5 is the one centered on the y axis
         def rotationAngle(sec) : return midSectorPhi(sec) - targetPhi
         repv = r.Math.RhoEtaPhiVector
