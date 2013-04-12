@@ -189,7 +189,7 @@ FIRST_PAD_ROW_DIVISION = { # currently not used
         'D2' : (23, 23, 23, 23),
         'D3' : (36, 36, 36, 36),
         },
-    'LARGE_PIVOT' = {
+    'LARGE_PIVOT' : {
         'D0' : ( 2,  2,  2,  2),
         'D1' : (10, 10,  9, 10),
         'D2' : (21, 21, 21, 21),
