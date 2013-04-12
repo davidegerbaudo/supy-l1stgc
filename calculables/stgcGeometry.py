@@ -134,6 +134,33 @@ PAD_ROWS = {
         }
     }
 #___________________________________________________________
+PAD_COL_PHI0 = {
+    'SMALL_PIVOT' : {
+        'D0' : ( 0.002717, -0.040916, -0.002717, -0.046351),
+        'D1' : ( 0.002717, -0.040916, -0.002717, -0.046351),
+        'D2' : ( 0.002717, -0.062732, -0.002717, -0.068167),
+        'D3' : ( 0.002717, -0.062732, -0.002717, -0.068167),
+        },
+    'SMALL_CONFIRM' : {
+        'D0' : ( -0.019099, -0.062732, -0.024534, -0.068167),
+        'D1' : ( -0.019099, -0.062732, -0.024534, -0.068167),
+        'D2' : ( -0.030008, -0.095457, -0.035442, -0.100892),
+        'D3' : ( -0.030008, -0.095457, -0.035442, -0.100892),
+        },
+    'LARGE_PIVOT' : {
+        'D0' : ( 0.002717, -0.040916, -0.002717, -0.046351),
+        'D1' : ( 0.002717, -0.040916, -0.002717, -0.046351),
+        'D2' : ( 0.002717, -0.062732, -0.002717, -0.068167),
+        'D3' : ( 0.002717, -0.062732, -0.002717, -0.068167),
+        },
+    'LARGE_CONFIRM' : {
+        'D0' : ( -0.019099, -0.062732, -0.024534, -0.068167),
+        'D1' : ( -0.019099, -0.062732, -0.024534, -0.068167),
+        'D2' : ( -0.030008, -0.095457, -0.035442, -0.100892),
+        'D3' : ( -0.030008, -0.095457, -0.035442, -0.100892),
+        }
+    }
+#___________________________________________________________
 Z_DANIEL = {
     'SMALL_PIVOT'   : ( 7407.5, 7418.8, 7430.2, 7441.5),
     'SMALL_CONFIRM' : ( 7067.5, 7078.8, 7090.2, 7101.5),
@@ -205,12 +232,15 @@ def padLeftmostColumn(wedgeType, detectorNumber, layer) :
 def padRightmostColumn(wedgeType, detectorNumber, layer) :
     return INDEX_RIGHTMOST_COL[wedgeType][detectorNumber2str(detectorNumber)][layer]
 
-def padRow0(wedgeType, detectorNumber, layer) :
-    return H_PAD_ROW_0[wedgeType][detectorNumber2str(detectorNumber)][layer]
+def padRow0(wedgeType, layer) :
+    return H_PAD_ROW_0[wedgeType][layer]
 
-def padHeight(wedgeType, detectorNumber, layer) :
-    return PAD_HEIGHT[wedgeType][detectorNumber2str(detectorNumber)][layer]
+def padHeight(wedgeType, layer) :
+    return PAD_HEIGHT[wedgeType][layer]
 
 def padRows(wedgeType, detectorNumber, layer) :
     return PAD_ROWS[wedgeType][detectorNumber2str(detectorNumber)][layer]
+
+def padPhi0(wedgeType, detectorNumber, layer) :
+    return PAD_COL_PHI0[wedgeType][detectorNumber2str(detectorNumber)][layer]
 #___________________________________________________________
