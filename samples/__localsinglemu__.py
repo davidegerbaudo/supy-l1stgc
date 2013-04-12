@@ -17,3 +17,6 @@ localsinglemu.add('JochenSingleMuPos',
 localsinglemu.add('JochenSingleMuNeg',
                   '['+','.join(['"/tmp/atlasG4.%s.NSWHitsDumper.root"'%pn for pn in poseneg[1:]])+']',
                   lumi=1.0e-5)
+# pileup+bkg file from Tiesheng (see email 'NSW Ntuple' 2013-04-02)
+# /afs/cern.ch/user/h/hsong/public/WorkSpace/Zmm_NSW/SingleMuPC0402_1000evt_digit_6Bits.root
+localsinglemu.add('pileup', '["/tmp/SingleMuPC0402_1000evt_digit_6Bits.root"]',lumi=1.0e-5)

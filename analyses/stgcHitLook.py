@@ -34,6 +34,9 @@ class stgcHitLook(supy.analysis) :
                    # ssh.multiplicity('IndicesEvenSector', max=50),
                    # sh.xyMap(stsp, indices='IndicesOddSector'),
                    # sh.xyMap(stsp, indices='IndicesEvenSector'),
+                   ssh.multiplicity('simhitIndices', max=100),
+                   ssh.value('t_Type_sTGC',5, -0.5,+4.5,'simhitIndices'),
+                             #Hits_sTGC_globalPositionZ:t_Type_sTGC
                   ]
         allLayers = config['allLayers']
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
@@ -52,8 +55,8 @@ class stgcHitLook(supy.analysis) :
         # lsteps += [supy.steps.printer.printstuff(['Any3LayersWedgeTrigger'.join(stsh),
         #                                           'Any4LayersWedgeTrigger'.join(stsh)])]
         # lsteps += [supy.steps.printer.printstuff(['PadLocalIndices'.join(stsh)])]
-        lsteps += [sh.padIndexAvg(stsh,idx,ieta=True) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.padIndexAvg(stsh,idx,iphi=True) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.padIndexAvg(stsh,idx,ieta=True) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.padIndexAvg(stsh,idx,iphi=True) for idx in indicesEoCpSectorsLayer]
 
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
@@ -116,8 +119,12 @@ class stgcHitLook(supy.analysis) :
     def listOfSamples(self,config) :
         test = False #True
         nEventsMax=1000 if test else None
-        return (supy.samples.specify(names='JochenSingleMuPos', color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
-                )
+        return (
+            # supy.samples.specify(names='JochenSingleMuPos',
+            #                      color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
+            supy.samples.specify(names='pileup',
+                                 color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
+            )
 
 
     def conclude(self,pars) :
