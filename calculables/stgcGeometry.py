@@ -239,6 +239,10 @@ def padRow0(wedgeType, layer) :
 def padHeight(wedgeType, layer) :
     return PAD_HEIGHT[wedgeType][layer]
 
+def padZsf(wedgeType, layer) : # temporary correction factor to account for the difference in Z pos
+    return Z_CURRENT_LAYOUT[wedgeType][layer] / Z_DANIEL[wedgeType][layer]
+
+
 def padRows(wedgeType, detectorNumber, layer) :
     return PAD_ROWS[wedgeType][detectorNumber2str(detectorNumber)][layer]
 
