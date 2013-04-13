@@ -293,9 +293,12 @@ class PadLocalIndices(wrappedChain.calculable) :
         wedTyps = ['_'.join([geo.largeSmall2str(ls), geo.pivotConfirm2str(pc)])
                    for ls,pc in zip(lss, pcs)]
         posPars = [(p.y(), p.phi()) for p in locPoss]
+        adjustZ = True
         padPars = [(geo.padPhiSize(d),               geo.padPhi0(wt, d, l),
                     geo.padLeftmostColumn(wt, d, l), geo.padRightmostColumn(wt, d, l),
-                    geo.padRow0(wt, l),              geo.padHeight(wt, d))
+                    geo.padRow0(wt, l),              geo.padHeight(wt, d),
+                    geo.padZsf(wt, l) if adjustZ else 1.0
+                    )
                    for pc, wt, d, l in zip(pcs, wedTyps, detNums, layers)]
 
         def phiOrigin(padShift, padSize) : return padShift * padSize
@@ -309,7 +312,7 @@ class PadLocalIndices(wrappedChain.calculable) :
         def localHeight(globY, lowEdgeY) : return globY - lowEdgeY
         def padIeta(localH, padHeight) : return int(localH / padHeight)
         def adjustPadIeta(padIeta, padRows) : return padRows if padIeta>padRows else padIeta
-        self.value = [( padIeta(localHeight(y, pR0), pH)
+        self.value = [( padIeta(localHeight(y, pR0*zSf), pH*zSf)
                        ,padIphi(phi -pP0 - pS5 , pSi)   )
-                      for (y, phi), (pSi, pP0, pLm, pRm, pR0, pH) in zip(posPars, padPars)]
+                      for (y, phi), (pSi, pP0, pLm, pRm, pR0, pH, zSf) in zip(posPars, padPars)]
 #__________________________________________________________
