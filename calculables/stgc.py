@@ -51,7 +51,7 @@ class Indices(wrappedChain.calculable) :
                          'mask',
                          'stripNumber',
                          'wireNumber',] \
-                       + ['Pos','LocPos','SecLocPos','Pivot','Confirm']
+                       + ['Pos','LocPos','SecLocPos','Pivot','Confirm','PadLocalIndices']
 
                    )
         self.moreName = ';'.join(filter(lambda x:x,
@@ -315,4 +315,60 @@ class PadLocalIndices(wrappedChain.calculable) :
         self.value = [( padIeta(localHeight(y, pR0*zSf), pH*zSf)
                        ,padIphi(phi -pP0 - pS5 , pSi)   )
                       for (y, phi), (pSi, pP0, pLm, pRm, pR0, pH, zSf) in zip(posPars, padPars)]
+#__________________________________________________________
+class Pad :
+    "A pad is defined by: side, sector, wedgeId(LS), wedgeType(PC), layer, ieta, iphi"
+    def __init__(self, side=None, sector=None, wedgeId=None, wedgeType=None,
+                 layer=None, ieta=None, iphi=None) :
+        for a in ['side', 'sector', 'wedgeId', 'wedgeType', 'layer', 'ieta', 'iphi'] :
+            setattr(self, a, eval(a))
+        self.charge = 0.0
+        self.hitIndices = []
+    def __str__(self) :
+        return hash(''.join([str(getattr(self,a))
+                             for a in ['side', 'sector', 'wedgeId', 'wedgeType',
+                                       'layer', 'ieta', 'iphi']]))
+    def __hash__(self) : return hash(self.__str__())
+    @property
+    def id(self) : return self.__hash__()
+    def addHit(self, hitIndex, hitCharge) :
+        self.hitIndices.append(hitIndex)
+        self.charge += hitCharge
+#__________________________________________________________
+class ActivePads(wrappedChain.calculable) :
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = 'ActivePads'
+        self.fixes = collection
+        self.stash(['Side','sectorNumber','wedgeId','wedgeType','layer','PadLocalIndices','depositEnergy'])
+    def update(self, _) :
+        sides   = self.source[self.Side]
+        sectors = self.source[self.sectorNumber]
+        wIds    = self.source[self.wedgeId]
+        wTs     = self.source[self.wedgeType]
+        layers  = self.source[self.layer]
+        iEPs    = self.source[self.PadLocalIndices]
+        energies= self.source[self.depositEnergy]
+        pads = dict() #collections.defaultdict(Pad)
+        for i,s,se,wi,wt,l,(ieta,iphi), e in zip(range(len(sides)), sides, sectors,
+                                                 wIds, wTs, layers, iEPs, energies) :
+            pad = Pad(s, se, wi, wt, l, ieta, iphi)
+            iD = pad.id
+            if iD in pads : pads[iD].addHit(i, e)
+            else :   # maybe this can be implemented with defaultdict?
+                pad.addHit(i, e)
+                pads[iD] = pad
+            pads[pad.id].addHit(i, e)
+        self.value = pads.values()
+#__________________________________________________________
+class ActivePadsIndices(wrappedChain.calculable) :
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = 'ActivePadsIndices'
+        self.fixes = collection
+        self.stash(['ActivePads'])
+    def update(self, _) :
+        self.value = range(len(self.source[self.ActivePads]))
 #__________________________________________________________
