@@ -68,3 +68,15 @@ class padIndexAvg(analysisStep) :
         #     eff.SetBinContent(bin,0)
         #     eff.SetBinError(bin,0)
         eff.Write()
+#___________________________________________________________
+class activePadCharge(steps.histos.value) :
+    def __init__(self, var='', indices='', index = None, N=100,low=0.0,up=+0.010,title='',w=None) :
+        super(activePadCharge, self).__init__(var, N, low, up,  indices, index, title, w)
+    def wrapName(self) : return ".charge",
+    def wrap(self,val) : return val[0].charge
+#___________________________________________________________
+class activePadNhits(steps.histos.value) :
+    def __init__(self, var='', indices='', index = None, N=51,low=-0.5,up=+50.5,title='',w=None) :
+        super(activePadNhits, self).__init__(var, N, low, up,  indices, index, title, w)
+    def wrapName(self) : return ".nHits",
+    def wrap(self,val) : return len(val[0].hitIndices)
