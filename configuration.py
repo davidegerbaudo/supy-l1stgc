@@ -1,7 +1,7 @@
 from supy.defaults import *
 
 def mainTree() :
-    return ('/','NSWHitsTree')
+    return ('/','NSWL1SimulationTree')
 
 def leavesToBlackList() :
     #return ['L1triggered', 'triggered', 'DCSBits']
