@@ -444,6 +444,19 @@ class PadLocalIndices(wrappedChain.calculable) :
                        ,padIphi(phi -pP0 - pS5 , pSi)   )
                       for (y, phi), (pSi, pP0, pLm, pRm, pR0, pH, zSf) in zip(posPars, padPars)]
 #__________________________________________________________
+class PadOffIndices(wrappedChain.calculable) :
+    "Pad (ieta,iphi) indices from Athena"
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = 'PadOffIndices'
+        self.fixes = collection
+        self.stash(['padEtaIdFromOfflineId','padPhiIdFromOfflineId'])
+    def update(self, _) :
+        ietas = self.source[self.padEtaIdFromOfflineId]
+        iphis = self.source[self.padPhiIdFromOfflineId]
+        self.value = [(ieta, iphi) for ieta, iphi in zip(ietas, iphis)]
+#__________________________________________________________
 class Pad :
     "A pad is defined by: side, sector, wedgeId(LS), wedgeType(PC), layer, ieta, iphi"
     def __init__(self, side=None, sector=None, wedgeId=None, wedgeType=None,
