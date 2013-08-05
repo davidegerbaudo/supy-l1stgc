@@ -12,6 +12,10 @@ class eta(steps.histos.value) :
     def wrapName(self) : return ".eta",
     def wrap(self,val) : return val[0].eta()
 #___________________________________________________________
+class absZ(steps.histos.value) :
+    def wrapName(self) : return ".absZ",
+    def wrap(self,val) : return abs(val[0].z())
+#___________________________________________________________
 class yVsX(steps.histos.value) :
     def __init__(self, var=('',''), indices='', index = None, N=(500,500),low=(-5000.0,-5000.0),up=(+5000.0,+5000.0),title='',w=None) :
         super(yVsX, self).__init__(var, N, low, up,  indices, index, title, w)
