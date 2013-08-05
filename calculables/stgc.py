@@ -233,6 +233,39 @@ class PivotOrConfirm(wrappedChain.calculable) :
         assert not any(p==c for p,c in zip(ps,cs)),"Hits must be either Pivot or Confirm"
         self.value = ['P' if p else 'C' for p in ps]
 #__________________________________________________________
+class Sector(wrappedChain.calculable) :
+    "Determine the sector number as done in NSW_sTGCHitPosition::get_sTGCSectorSafe"
+    @property
+    def name(self) : return 'Sector'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(["padGlobal%s"%v for v in ['X','Y','Z']]+['Small'])
+    def update(self, _) :
+        xs = self.source[self.padGlobalX]
+        ys = self.source[self.padGlobalY]
+        zs = self.source[self.padGlobalZ]
+        phis = [math.atan2(y, x) for x, y in zip(xs, ys)]
+        isSmallSector = self.source[self.Small]
+        dp = 2.*math.pi/16.
+        centerSmall = {2:1*dp, 4:3*dp, 6:5*dp, 8:7*dp, 10:9*dp, 12:11*dp, 14:13*dp, 16:15*dp}
+        centerLarge = {1:0*dp, 3:2*dp, 5:4*dp, 7:6*dp,  9:8*dp, 11:10*dp, 13:12*dp, 15:14*dp}
+        centerDict = centerSmall if isSmallSector else centerLarge
+        def phi_zero_2pi(p) :
+            pi = math.pi
+            while p <  0.    : p += 2.*pi
+            while p >= 2.*pi : p -= 2.*pi
+            return p
+        def absDeltaPhi(p1, p2) :
+            pi = math.pi
+            p1, p2 = phi_zero_2pi(p1), phi_zero_2pi(p2)
+            return min([2.*pi - abs(p1 - p2), abs(p1 - p2)])
+        class absDeltaPhiFromP:
+            def __init__(self, val) : self.val = val
+            def deltaPhi(self, (idx,center)) : return absDeltaPhi(self.val, center)
+        self.value = [sorted(centerDict.iteritems(),
+                             key=absDeltaPhiFromP(p).deltaPhi)[0][0]
+                      for p in phis]
+#__________________________________________________________
 class Side(wrappedChain.calculable) :
     "A side is z>0, facing LHCb; C side is z<0, facing ALICE"
     @property
