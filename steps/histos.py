@@ -50,7 +50,7 @@ class padIndexAvg(analysisStep) :
         if not self.title : self.title = 'average '+('iEta' if ieta else 'iPhi')+indices
     def uponAcceptance(self, eventVars) :
         positions = eventVars['Pos'.join(self.coll)]
-        etaphiIds = eventVars['PadLocalIndices'.join(self.coll)]
+        etaphiIds = eventVars['PadOffIndices'.join(self.coll)]
         indices   = eventVars[self.indices]
         for i in indices :
             pos, etaphi = positions[i], etaphiIds[i]
