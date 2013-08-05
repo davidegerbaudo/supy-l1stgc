@@ -38,6 +38,9 @@ class padIdLook(supy.analysis) :
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter()]
         lsteps += [ssh.multiplicity(b) for b in branchnames]
+        lsteps += [sh.absZ(potp, 100, 7000, 8000, poti)]
+        lsteps += [ssh.value('Small'.join(pot), 3, -0.5, 2.5, poti)]
+        lsteps += [ssh.value('Sector'.join(pot), 21, -0.5, 20.5, poti)]
         lsteps += [sh.yVsX((potp, potp), poti),]
         return lsteps
     def listOfCalculables(self,config) :
