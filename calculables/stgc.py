@@ -156,24 +156,24 @@ class SmallConfirm(GenericPivotConfirm) :
     def name(self) : return 'SmallConfirm'.join(self.fixes)
     def __init__(self, collection = None) :
         super(SmallConfirm, self).__init__(collection)
-        self.minZ = 7000.
-        self.maxZ = 7100.
+        self.minZ = 7100.
+        self.maxZ = 7200.
 #__________________________________________________________
 class SmallPivot(GenericPivotConfirm) :
     @property
     def name(self) : return 'SmallPivot'.join(self.fixes)
     def __init__(self, collection = None) :
         super(SmallPivot, self).__init__(collection)
-        self.minZ = 7300.
-        self.maxZ = 7400.
+        self.minZ = 7200.
+        self.maxZ = 7300.
 #__________________________________________________________
 class LargePivot(GenericPivotConfirm) :
     @property
     def name(self) : return 'LargePivot'.join(self.fixes)
     def __init__(self, collection = None) :
         super(LargePivot, self).__init__(collection)
-        self.minZ = 7400.
-        self.maxZ = 7500.
+        self.minZ = 7450.
+        self.maxZ = 7550.
 #__________________________________________________________
 class LargeConfirm(GenericPivotConfirm) :
     @property
@@ -181,7 +181,7 @@ class LargeConfirm(GenericPivotConfirm) :
     def __init__(self, collection = None) :
         super(LargeConfirm, self).__init__(collection)
         self.minZ = 7600.
-        self.maxZ = 7800.
+        self.maxZ = 7700.
 #__________________________________________________________
 class Small(wrappedChain.calculable) :
     @property
@@ -190,6 +190,8 @@ class Small(wrappedChain.calculable) :
         self.fixes = collection
         self.stash(['SmallPivot', 'SmallConfirm'])
     def update(self, _) :
+        print self.source[self.SmallPivot]
+        print self.source[self.SmallConfirm]
         self.value = [sp or sc for sc, sp in zip(self.source[self.SmallPivot],
                                                  self.source[self.SmallConfirm])]
 #__________________________________________________________
