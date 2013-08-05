@@ -2,7 +2,6 @@ import supy, ROOT as r
 import calculables, steps, samples
 import math
 
-
 # runNumber
 # eventNumber
 branchnames = ["PadTdsOfflineTool_%s"%l
@@ -18,12 +17,11 @@ branchnames = ["PadTdsOfflineTool_%s"%l
                          'padPhiIdFromOldSimu',
                          ]]
 
-
 class padIdLook(supy.analysis) :
 
     def parameters(self) :
-        fields =                    [ 'stgcSimhit',     'truthPart']
-        objects =  dict(zip(fields, [('Hits_sTGC_',''), ('TruthParticle_','')]))
+        fields =                    [ 'PadOffTool']
+        objects =  dict(zip(fields, [('PadTdsOfflineTool_',''),]))
         return {
             'objects'  : objects,
             'allSectors' : range(1, 16+1),
@@ -34,70 +32,35 @@ class padIdLook(supy.analysis) :
     def listOfSteps(self,config) :
         sh, ssh, ssf = steps.histos, supy.steps.histos, supy.steps.filters
         obj       = config['objects']
-        stsh      = obj['stgcSimhit']
-        truthPart = obj['truthPart']
-        stsi = 'simhitIndices'
-        stsp = 'Pos'.join(stsh)
-        stslp = 'LocPos'.join(stsh)
-        stsslp = 'SecLocPos'.join(stsh)
-        truthP4 = 'P4'.join(truthPart)
-        truthIdx = 'truthIndices'
-        pi = math.pi
-
+        pot      =  obj['PadOffTool']
+        poti = 'IndicesA'.join(pot)
+        potp = 'Pos'.join(pot)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter()]
         lsteps += [ssh.multiplicity(b) for b in branchnames]
-
+        lsteps += [sh.yVsX((potp, potp), poti),]
         return lsteps
-
     def listOfCalculables(self,config) :
-
         obj       = config['objects']
-        simhit    = obj['stgcSimhit']
-        truthPart = obj['truthPart']
+        pot      =  obj['PadOffTool']
         cs = calculables.stgc
         calcs  = supy.calculables.zeroArgs(supy.calculables)
-        calcs += [calculables.truth.truthIndices(pdgs=[+13, -13]),
-                  cs.simhitIndices(label=''),
-                  ]
-        allSectors, allLayers = config['allSectors'], config['allLayers']
-        oddSectors, evenSectors = config['oddSectors'], config['evenSectors']
-        calcs += [cs.Indices(simhit, "Sector%d"%s, sectors=[s,]) for s in allSectors]
-        calcs += [cs.Indices(simhit, "Sector%dLayer%d"%(s,l), sectors=[s,], layers=[l,])
-                  for s in allSectors for l in allLayers]
-        calcs += [cs.Indices(simhit, "OddSectorsLayer%d"%l,
-                             sectors=config['oddSectors'], layers=[l,])
-                  for l in config['allLayers']]
-        calcs += [cs.Indices(simhit, "EvenSectorsLayer%d"%l,
-                             sectors=config['evenSectors'], layers=[l,])
-                  for l in config['allLayers']]
-
-        calcs += [cs.Indices(simhit, eok+pck+"SectorsLayer%d"%l,
-                             sectors=eos, layers=[l,],pivot=pcv, confirm=not pcv)
-                  for eok, eos in zip(['Even',  'Odd'    ], [evenSectors, oddSectors])
-                  for pck, pcv in zip(['Pivot', 'Confirm'], [True,        False     ])
-                  for l in allLayers]
-        calcs += supy.calculables.fromCollections(cs, [simhit, ])
-        calcs += supy.calculables.fromCollections(calculables.truth, [truthPart])
-
+        calcs += supy.calculables.fromCollections(cs, [pot, ])
         return calcs
-
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu, samples.sandroathena]
-
     def listOfSamples(self,config) :
         test = False #True
         nEventsMax=1000 if test else None
-        return ( supy.samples.specify(names='Athena', color=r.kBlack, markerStyle = 2, nEventsMax=nEventsMax)
+        return (supy.samples.specify(names='Athena', color=r.kBlack, markerStyle = 2,
+                                     nEventsMax=nEventsMax)
                 )
-
-
     def conclude(self,pars) :
-        #make a pdf file with plots from the histograms created above
         org = self.organizer(pars)
         org.scale()
         supy.plotter(org,
                      pdfFileName = self.pdfFileName(org.tag),
                      doLog=False,
-                     blackList = ['lumiHisto','xsHisto','nJobsHisto','cnt_.*', 'cum_.*'],
+                     blackList = ['lumiHisto','xsHisto','nJobsHisto',
+                                  'cnt_.*', 'cum_.*'],
                      ).plotAll()
