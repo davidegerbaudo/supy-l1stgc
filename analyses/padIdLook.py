@@ -39,9 +39,19 @@ class padIdLook(supy.analysis) :
         lsteps += [supy.steps.printer.progressPrinter()]
         lsteps += [ssh.multiplicity(b) for b in branchnames]
         lsteps += [sh.absZ(potp, 100, 7000, 8000, poti)]
+        lsteps += [sh.absZ(potp, 100, 7100, 7310, poti)]
+        lsteps += [sh.absZ(potp, 100, 7460, 7680, poti)]
         lsteps += [ssh.value('Small'.join(pot), 3, -0.5, 2.5, poti)]
         lsteps += [ssh.value('Sector'.join(pot), 21, -0.5, 20.5, poti)]
         lsteps += [sh.yVsX((potp, potp), poti),]
+        lsteps += [ssh.multiplicity("IndicesOddL%d"%l)  for l in range(1,4+1)]
+        lsteps += [ssh.multiplicity("IndicesEvenL%d"%l) for l in range(1,4+1)]
+        lsteps += [sh.yVsX((potp, potp), "IndicesOddL%d"%l)  for l in range(1,4+1)]
+        lsteps += [sh.yVsX((potp, potp), "IndicesEvenL%d"%l) for l in range(1,4+1)]
+        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, ieta=True)  for l in range(1,4+1)]
+        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, iphi=True)  for l in range(1,4+1)]
+        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, ieta=True) for l in range(1,4+1)]
+        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, iphi=True) for l in range(1,4+1)]
         return lsteps
     def listOfCalculables(self,config) :
         obj       = config['objects']
@@ -49,13 +59,15 @@ class padIdLook(supy.analysis) :
         cs = calculables.stgc
         calcs  = supy.calculables.zeroArgs(supy.calculables)
         calcs += supy.calculables.fromCollections(cs, [pot, ])
+        calcs += [cs.IndicesOddSectorLayer( pot, "L%d"%l, [l]) for l in range(1,4+1)]
+        calcs += [cs.IndicesEvenSectorLayer(pot, "L%d"%l, [l]) for l in range(1,4+1)]
         return calcs
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu, samples.sandroathena]
     def listOfSamples(self,config) :
         test = False #True
         nEventsMax=1000 if test else None
-        return (supy.samples.specify(names='Athena', color=r.kBlack, markerStyle = 2,
+        return (supy.samples.specify(names='Athena50k', color=r.kBlack, markerStyle = 2,
                                      nEventsMax=nEventsMax)
                 )
     def conclude(self,pars) :
