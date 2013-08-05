@@ -344,7 +344,8 @@ class PadLocalIndices(wrappedChain.calculable) :
     def __init__(self, collection = '') :
         self.label = 'PadLocalIndices'
         self.fixes = collection
-        self.stash(['SecLocPos','sectorNumber','detectorNumber','wedgeId','wedgeType','layer'])
+        self.stash(['SecLocPos','sectorNumber','detectorNumber',
+                    'wedgeId','wedgeType','layer'])
     def update(self, _) :
         pS5     = geo.midSectorPhi(5) # we are still working with the coord rotated to sector 5
         locPoss = self.source[self.SecLocPos]
