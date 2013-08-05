@@ -90,6 +90,37 @@ class simhitIndices(Indices):
     @property
     def name(self): return 'simhitIndices' + self.label
 #__________________________________________________________
+class IndicesSectorLayer(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'Indices' + self.label
+    def __init__(self, collection=('',''), label=None, layers=[], sectors=[]) :
+        self.label   = label
+        self.layers  = frozenset(layers)
+        self.sectors = frozenset(sectors)
+        self.fixes   = collection
+        self.stash(['Sector', 'Layer'])
+        self.moreName = ';'.join(filter(lambda x:x,
+                                        ["Layer in %s"%str(list(self.layers)) if self.layers else '',
+                                         "Sector in %s"%str(list(self.sectors)) if self.sectors else '',
+                                         ])
+                                 )
+    def update(self,_) :
+        layer   = self.source[self.Layer]
+        sector  = self.source[self.Sector]
+        self.value = filter( lambda i: \
+                                 ( (not self.layers) or (layer[i] in self.layers)    ) and \
+                                 ( (not self.sectors) or (sector[i] in self.sectors) )
+                             ,
+                             range(len(layer)))
+class IndicesOddSectorLayer(IndicesSectorLayer) :
+    def __init__(self, collection=('',''), label=None, layers=[]) :
+        super(IndicesOddSectorLayer, self).__init__(collection, 'Odd'+label, layers,
+                                                    sectors=range(0+1,16)[::2])
+class IndicesEvenSectorLayer(IndicesSectorLayer) :
+    def __init__(self, collection=('',''), label=None, layers=[]) :
+        super(IndicesEvenSectorLayer, self).__init__(collection, 'Even'+label, layers,
+                                                     sectors=range(0,16+1)[::2])
+#__________________________________________________________
 class Pos(wrappedChain.calculable) :
     @property
     def name(self) : return 'Pos'.join(self.fixes)
@@ -244,12 +275,11 @@ class Sector(wrappedChain.calculable) :
         xs = self.source[self.padGlobalX]
         ys = self.source[self.padGlobalY]
         zs = self.source[self.padGlobalZ]
-        phis = [math.atan2(y, x) for x, y in zip(xs, ys)]
         isSmallSector = self.source[self.Small]
+        phis = [math.atan2(y, x) for x, y in zip(xs, ys)]
         dp = 2.*math.pi/16.
         centerSmall = {2:1*dp, 4:3*dp, 6:5*dp, 8:7*dp, 10:9*dp, 12:11*dp, 14:13*dp, 16:15*dp}
         centerLarge = {1:0*dp, 3:2*dp, 5:4*dp, 7:6*dp,  9:8*dp, 11:10*dp, 13:12*dp, 15:14*dp}
-        centerDict = centerSmall if isSmallSector else centerLarge
         def phi_zero_2pi(p) :
             pi = math.pi
             while p <  0.    : p += 2.*pi
@@ -262,9 +292,41 @@ class Sector(wrappedChain.calculable) :
         class absDeltaPhiFromP:
             def __init__(self, val) : self.val = val
             def deltaPhi(self, (idx,center)) : return absDeltaPhi(self.val, center)
-        self.value = [sorted(centerDict.iteritems(),
+        self.value = [sorted(centerSmall.iteritems() if s else centerLarge.iteritems(),
                              key=absDeltaPhiFromP(p).deltaPhi)[0][0]
-                      for p in phis]
+                      for p,s in zip(phis, isSmallSector)]
+#__________________________________________________________
+class Layer(wrappedChain.calculable) :
+    "Emulate the layer from the abs(z) position"
+    @property
+    def name(self) : return 'Layer'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(["padGlobal%s"%v for v in ['X','Y','Z']]+['Small'])
+    def update(self, _) :
+        zs = self.source[self.padGlobalZ]
+        zs = [abs(z) for z in zs]
+        def layerFromZ(z) :
+            if   7110. < z < 7120. : return 1
+            elif 7120. < z < 7130. : return 2
+            elif 7155. < z < 7165. : return 3
+            elif 7165. < z < 7175. : return 4
+            #
+            elif 7235. < z < 7245. : return 1
+            elif 7250. < z < 7260. : return 2
+            elif 7280. < z < 7290. : return 3
+            elif 7290. < z < 7300. : return 4
+            #
+            elif 7470. < z < 7480. : return 1
+            elif 7485. < z < 7495. : return 2
+            elif 7515. < z < 7525. : return 3
+            elif 7525. < z < 7535. : return 4
+            #
+            elif 7600. < z < 7610. : return 1
+            elif 7610. < z < 7620. : return 2
+            elif 7640. < z < 7650. : return 3
+            elif 7655. < z < 7665. : return 4
+        self.value = [layerFromZ(z) for z in zs]
 #__________________________________________________________
 class Side(wrappedChain.calculable) :
     "A side is z>0, facing LHCb; C side is z<0, facing ALICE"
