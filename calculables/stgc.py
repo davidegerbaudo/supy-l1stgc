@@ -190,8 +190,6 @@ class Small(wrappedChain.calculable) :
         self.fixes = collection
         self.stash(['SmallPivot', 'SmallConfirm'])
     def update(self, _) :
-        print self.source[self.SmallPivot]
-        print self.source[self.SmallConfirm]
         self.value = [sp or sc for sc, sp in zip(self.source[self.SmallPivot],
                                                  self.source[self.SmallConfirm])]
 #__________________________________________________________
