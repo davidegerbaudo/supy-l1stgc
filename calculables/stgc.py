@@ -142,14 +142,14 @@ class GenericPivotConfirm(wrappedChain.calculable) :
     "Used to emulate the pivot confirm bit; will be dropped once we have this piece of info from the geometry"
     def __init__(self, collection=None, minZ=None, maxZ=None) :
         self.fixes = collection
-        self.stash(['globalPositionZ'])
+        self.stash(['padGlobalZ'])
         self.minZ = minZ
         self.maxZ = maxZ
     def update(self, _) :
         self.value = [((abs(z) >= self.minZ if self.minZ!=None else True)
                        and
                        (abs(z) <  self.maxZ if self.maxZ!=None else True))
-                      for z in self.source[self.globalPositionZ]]
+                      for z in self.source[self.padGlobalZ]]
 #__________________________________________________________
 class SmallConfirm(GenericPivotConfirm) :
     @property
