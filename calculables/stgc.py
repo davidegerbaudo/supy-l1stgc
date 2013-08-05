@@ -27,6 +27,19 @@ class IndicesEvenSector(IndicesFilteredOnSector) :
         super(IndicesEvenSector, self).__init__(collection)
         self.func = 'lambda i : i%2'
 #__________________________________________________________
+class IndicesA(wrappedChain.calculable) :
+    "Indices for Athena pad coord"
+    @property
+    def name(self) : return 'IndicesA'.join(self.fixes)
+    def __init__(self, collection=('PadTdsOfflineTool_','')) :
+        self.label   = 'aLabel'
+        self.moreName = 'default indices'
+        self.fixes   = collection
+        self.stash(['nPadHits',])
+    def update(self,_) :
+        nPadHits = self.source[self.nPadHits]
+        self.value = range(nPadHits)
+#__________________________________________________________
 class Indices(wrappedChain.calculable) :
     @property
     def name(self) : return 'Indices' + self.label
@@ -82,12 +95,12 @@ class Pos(wrappedChain.calculable) :
     def name(self) : return 'Pos'.join(self.fixes)
     def __init__(self, collection) :
         self.fixes = collection
-        self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
+        self.stash(["padGlobal%s"%v for v in ['X','Y','Z']])
         self.pv3 = utils.root.PositionV
     def update(self, _) :
-        xs = self.source[self.globalPositionX]
-        ys = self.source[self.globalPositionY]
-        zs = self.source[self.globalPositionZ]
+        xs = self.source[self.padGlobalX]
+        ys = self.source[self.padGlobalY]
+        zs = self.source[self.padGlobalZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
 #__________________________________________________________
 class LocPos(wrappedChain.calculable) :
