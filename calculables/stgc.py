@@ -265,9 +265,18 @@ class PivotOrConfirm(wrappedChain.calculable) :
         self.value = ['P' if p else 'C' for p in ps]
 #__________________________________________________________
 class Sector(wrappedChain.calculable) :
-    "Determine the sector number as done in NSW_sTGCHitPosition::get_sTGCSectorSafe"
+    "Sector number, either from the tree or emulated"
     @property
     def name(self) : return 'Sector'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(['padSectorIdFromOfflineId']) # or SectorEmulated
+    def update(self, _) :
+        self.value = self.source[self.padSectorIdFromOfflineId]
+class SectorEmulated(wrappedChain.calculable) :
+    "Determine the sector number as done in NSW_sTGCHitPosition::get_sTGCSectorSafe"
+    @property
+    def name(self) : return 'SectorEmulated'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
         self.stash(["padGlobal%s"%v for v in ['X','Y','Z']]+['Small'])
@@ -297,9 +306,18 @@ class Sector(wrappedChain.calculable) :
                       for p,s in zip(phis, isSmallSector)]
 #__________________________________________________________
 class Layer(wrappedChain.calculable) :
-    "Emulate the layer from the abs(z) position"
+    "Layer info (either from the tree, or emulated)"
     @property
     def name(self) : return 'Layer'.join(self.fixes)
+    def __init__(self, collection = None) :
+        self.fixes = collection
+        self.stash(['padLayerFromOfflineId']) # or LayerEmulated
+    def update(self, _) :
+        self.value = self.source[self.padLayerFromOfflineId]
+class LayerEmulated(wrappedChain.calculable) :
+    "Emulate the layer from the abs(z) position"
+    @property
+    def name(self) : return 'LayerEmulated'.join(self.fixes)
     def __init__(self, collection = None) :
         self.fixes = collection
         self.stash(["padGlobal%s"%v for v in ['X','Y','Z']]+['Small'])
