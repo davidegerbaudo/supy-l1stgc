@@ -69,15 +69,19 @@ class padIdLook(supy.analysis) :
         calcs += sc.fromCollections(cs, [pot, ])
         calcs += [cs.IndicesOddSectorLayer( pot, "L%d"%l, [l]) for l in layers]
         calcs += [cs.IndicesEvenSectorLayer(pot, "L%d"%l, [l]) for l in layers]
-        calcs += [cs.IndicesOddSectorLayer( pot, "L%dInvalid"%l, [l], True)
+        calcs += [cs.IndicesOddSectorLayer( pot, "L%dInvalid"%l, [l], invalid=True)
                   for l in layers]
-        calcs += [cs.IndicesEvenSectorLayer(pot, "L%dInvalid"%l, [l], True)
+        calcs += [cs.IndicesEvenSectorLayer(pot, "L%dInvalid"%l, [l], invalid=True)
+                  for l in layers]
+        calcs += [cs.IndicesOddSectorLayer( pot, "L%dValid"%l, [l], valid=True)
+                  for l in layers]
+        calcs += [cs.IndicesEvenSectorLayer(pot, "L%dValid"%l, [l], valid=True)
                   for l in layers]
         return calcs
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu, samples.sandroathena]
     def listOfSamples(self,config) :
-        test = False #True
+        test = True #False
         nEventsMax=1000 if test else None
         # Athena or Athena50k
         return (supy.samples.specify(names='Athena50k', color=r.kBlack, markerStyle = 2,
