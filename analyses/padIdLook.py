@@ -31,8 +31,9 @@ class padIdLook(supy.analysis) :
             }
     def listOfSteps(self,config) :
         sh, ssh, ssf = steps.histos, supy.steps.histos, supy.steps.filters
-        obj       = config['objects']
-        pot      =  obj['PadOffTool']
+        obj    = config['objects']
+        pot    = obj['PadOffTool']
+        layers = config['allLayers']
         poti = 'IndicesAthena'.join(pot)
         potp = 'Pos'.join(pot)
         lsteps  = []
@@ -44,28 +45,29 @@ class padIdLook(supy.analysis) :
         lsteps += [ssh.value('Small'.join(pot), 3, -0.5, 2.5, poti)]
         lsteps += [ssh.value('Sector'.join(pot), 21, -0.5, 20.5, poti)]
         lsteps += [sh.yVsX((potp, potp), poti),]
-        lsteps += [ssh.multiplicity("IndicesOddL%d"%l)  for l in range(1,4+1)]
-        lsteps += [ssh.multiplicity("IndicesEvenL%d"%l) for l in range(1,4+1)]
-        lsteps += [sh.yVsX((potp, potp), "IndicesOddL%d"%l)  for l in range(1,4+1)]
-        lsteps += [sh.yVsX((potp, potp), "IndicesEvenL%d"%l) for l in range(1,4+1)]
-        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, ieta=True)  for l in range(1,4+1)]
-        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, iphi=True)  for l in range(1,4+1)]
-        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, ieta=True) for l in range(1,4+1)]
-        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, iphi=True) for l in range(1,4+1)]
+        lsteps += [ssh.multiplicity("IndicesOddL%d"%l)  for l in layers]
+        lsteps += [ssh.multiplicity("IndicesEvenL%d"%l) for l in layers]
+        lsteps += [sh.yVsX((potp, potp), "IndicesOddL%d"%l)  for l in layers]
+        lsteps += [sh.yVsX((potp, potp), "IndicesEvenL%d"%l) for l in layers]
+        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, ieta=True)  for l in layers]
+        lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, iphi=True)  for l in layers]
+        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, ieta=True) for l in layers]
+        lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, iphi=True) for l in layers]
         return lsteps
     def listOfCalculables(self,config) :
-        obj       = config['objects']
-        pot      =  obj['PadOffTool']
-        cs = calculables.stgc
-        calcs  = supy.calculables.zeroArgs(supy.calculables)
-        calcs += supy.calculables.fromCollections(cs, [pot, ])
-        calcs += [cs.IndicesOddSectorLayer( pot, "L%d"%l, [l]) for l in range(1,4+1)]
-        calcs += [cs.IndicesEvenSectorLayer(pot, "L%d"%l, [l]) for l in range(1,4+1)]
+        obj    = config['objects']
+        pot    =  obj['PadOffTool']
+        layers = config['allLayers']
+        cs, sc = calculables.stgc, supy.calculables
+        calcs  = sc.zeroArgs(sc)
+        calcs += sc.fromCollections(cs, [pot, ])
+        calcs += [cs.IndicesOddSectorLayer( pot, "L%d"%l, [l]) for l in layers]
+        calcs += [cs.IndicesEvenSectorLayer(pot, "L%d"%l, [l]) for l in layers]
         return calcs
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu, samples.sandroathena]
     def listOfSamples(self,config) :
-        test = False #True
+        test = True #False
         nEventsMax=1000 if test else None
         # Athena or Athena50k
         return (supy.samples.specify(names='Athena50k', color=r.kBlack, markerStyle = 2,
