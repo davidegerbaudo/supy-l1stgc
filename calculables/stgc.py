@@ -493,6 +493,19 @@ class PadOffIndices(wrappedChain.calculable) :
         iphis = self.source[self.padPhiIdFromOfflineId]
         self.value = [(ieta, iphi) for ieta, iphi in zip(ietas, iphis)]
 #__________________________________________________________
+class PadOldIndices(wrappedChain.calculable) :
+    "Pad (ieta,iphi) indices recomputed with old (standalone) simulation"
+    @property
+    def name(self) : return self.label.join(self.fixes)
+    def __init__(self, collection = '') :
+        self.label = 'PadOldIndices'
+        self.fixes = collection
+        self.stash(['padEtaIdFromOldSimu', 'padPhiIdFromOldSimu'])
+    def update(self, _) :
+        ietas = self.source[self.padEtaIdFromOldSimu]
+        iphis = self.source[self.padPhiIdFromOldSimu]
+        self.value = [(ieta, iphi) for ieta, iphi in zip(ietas, iphis)]
+#__________________________________________________________
 class Pad :
     "A pad is defined by: side, sector, wedgeId(LS), wedgeType(PC), layer, ieta, iphi"
     def __init__(self, side=None, sector=None, wedgeId=None, wedgeType=None,
