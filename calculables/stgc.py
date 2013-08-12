@@ -93,33 +93,45 @@ class simhitIndices(Indices):
 class IndicesSectorLayer(wrappedChain.calculable) :
     @property
     def name(self) : return 'Indices' + self.label
-    def __init__(self, collection=('',''), label=None, layers=[], sectors=[]) :
+    def __init__(self, collection=('',''), label=None, layers=[], sectors=[],
+                 invalid=False) :
         self.label   = label
         self.layers  = frozenset(layers)
         self.sectors = frozenset(sectors)
+        self.invalid = invalid
         self.fixes   = collection
-        self.stash(['Sector', 'Layer'])
+        self.stash(['Sector', 'Layer']
+                   + ['padEtaIdFromOldSimu', 'padPhiIdFromOldSimu'])
         self.moreName = ';'.join(filter(lambda x:x,
                                         ["Layer in %s"%str(list(self.layers)) if self.layers else '',
                                          "Sector in %s"%str(list(self.sectors)) if self.sectors else '',
+                                         'Invalid' if self.invalid else '',
                                          ])
                                  )
     def update(self,_) :
         layer   = self.source[self.Layer]
         sector  = self.source[self.Sector]
+        ieta    = self.source[self.padEtaIdFromOldSimu]
+        iphi    = self.source[self.padPhiIdFromOldSimu]
+        dummy   = -999 # see TrigT1NSWSimTools/PadTdsOfflineTool.cxx
+        assert layer.size()==ieta.size(),"layer[%d], ieta[%d]: old nutple?"%(layer.size(), ieta.size())
         self.value = filter( lambda i: \
                                  ( (not self.layers) or (layer[i] in self.layers)    ) and \
-                                 ( (not self.sectors) or (sector[i] in self.sectors) )
+                                 ( (not self.sectors) or (sector[i] in self.sectors) ) and \
+                                 ( (not self.invalid) or (ieta.at(i)==dummy and
+                                                          iphi.at(i)==dummy)         )
                              ,
                              range(len(layer)))
 class IndicesOddSectorLayer(IndicesSectorLayer) :
-    def __init__(self, collection=('',''), label=None, layers=[]) :
+    def __init__(self, collection=('',''), label=None, layers=[], invalid=False) :
         super(IndicesOddSectorLayer, self).__init__(collection, 'Odd'+label, layers,
-                                                    sectors=range(0+1,16)[::2])
+                                                    sectors=range(0+1,16)[::2],
+                                                    invalid=invalid)
 class IndicesEvenSectorLayer(IndicesSectorLayer) :
-    def __init__(self, collection=('',''), label=None, layers=[]) :
+    def __init__(self, collection=('',''), label=None, layers=[], invalid=False) :
         super(IndicesEvenSectorLayer, self).__init__(collection, 'Even'+label, layers,
-                                                     sectors=range(0,16+1)[::2])
+                                                     sectors=range(0,16+1)[::2],
+                                                     invalid=invalid)
 #__________________________________________________________
 class Pos(wrappedChain.calculable) :
     @property
