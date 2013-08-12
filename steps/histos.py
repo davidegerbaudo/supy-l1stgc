@@ -73,6 +73,44 @@ class padIndexAvg(analysisStep) :
         #     eff.SetBinError(bin,0)
         eff.Write()
 #___________________________________________________________
+class padIndexAvgDelta(analysisStep) :
+    "Plot the avg difference between two pad indices (ieta or iphi)"
+    def __init__(self, coll, indices='', ieta=False, iphi=False,
+                 N=(100,100),lo=(-5000.0,-5000.0),hi=(+5000.0,+5000.0),
+                 title='') :
+        assert ieta!=iphi, "Specify either ieta or iphi"
+        for item in ['coll','indices','ieta','iphi','N','lo','hi','title'] : setattr(self,item,eval(item))
+        self.hname = '_'.join(coll)+'padIndexAvgDelta'+('iEta' if ieta else 'iPhi')+indices
+        self.cumname = 'cum_'+self.hname
+        self.cntname = 'cnt_'+self.hname
+        self.avgname = 'avg_'+self.hname
+        self.moreName = self.hname
+        if not self.title : self.title = 'average delta(Off-Old) '+('iEta' if ieta else 'iPhi')+indices
+    def uponAcceptance(self, eventVars) :
+        positions  = eventVars['Pos'.join(self.coll)]
+        etaphiIdsOff = eventVars['PadOffIndices'.join(self.coll)]
+        etaphiIdsOld = eventVars['PadOldIndices'.join(self.coll)]
+        indices   = eventVars[self.indices]
+        for i in indices :
+            pos, etaphi0, etaphi1 = positions[i], etaphiIdsOff[i], etaphiIdsOld[i]
+            epOff = etaphiIdsOff[i][0] if self.ieta else etaphiIdsOff[i][1]
+            epOld = etaphiIdsOld[i][0] if self.ieta else etaphiIdsOld[i][1]
+            self.book.fill((pos.x(), pos.y()),
+                           self.cumname, self.N, self.lo, self.hi, title=self.cumname,
+                           w=(epOff - epOld))
+            self.book.fill((pos.x(), pos.y()),
+                           self.cntname, self.N, self.lo, self.hi, title=self.cntname)
+    def mergeFunc(self, products) :
+        num = r.gDirectory.Get(self.cumname)
+        den = r.gDirectory.Get(self.cntname)
+        if not num : return
+        if not den : return
+        eff = num.Clone('avg'+self.cumname)
+        if not eff : return
+        eff.SetTitle(self.title)
+        eff.Divide(num,den,1,1,"B")
+        eff.Write()
+#___________________________________________________________
 class activePadCharge(steps.histos.value) :
     def __init__(self, var='', indices='', index = None, N=100,low=0.0,up=+0.010,title='',w=None) :
         super(activePadCharge, self).__init__(var, N, low, up,  indices, index, title, w)
