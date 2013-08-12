@@ -53,10 +53,12 @@ class padIdLook(supy.analysis) :
         lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, iphi=True)  for l in layers]
         lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, ieta=True) for l in layers]
         lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, iphi=True) for l in layers]
-        lsteps += [ssh.multiplicity(iInv)
-                   for  iInv  in ["Indices%(oe)sL%(l)dInvalid" % {'oe':oe, 'l':l}
-                                  for oe in ['Even','Odd']
-                                  for l in layers]]
+        indicesInvalid = ["Indices%(oe)sL%(l)dInvalid" % {'oe':oe, 'l':l}
+                          for oe in ['Even','Odd']
+                          for l in layers]
+        lsteps += [ssh.multiplicity(iInv) for  iInv  in indicesInvalid]
+        lsteps += [sh.yVsX((potp, potp), iInv) for iInv in indicesInvalid]
+
         return lsteps
     def listOfCalculables(self,config) :
         obj    = config['objects']
