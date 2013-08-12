@@ -27,10 +27,10 @@ class IndicesEvenSector(IndicesFilteredOnSector) :
         super(IndicesEvenSector, self).__init__(collection)
         self.func = 'lambda i : i%2'
 #__________________________________________________________
-class IndicesA(wrappedChain.calculable) :
+class IndicesAthena(wrappedChain.calculable) :
     "Indices for Athena pad coord"
     @property
-    def name(self) : return 'IndicesA'.join(self.fixes)
+    def name(self) : return 'IndicesAthena'.join(self.fixes)
     def __init__(self, collection=('PadTdsOfflineTool_','')) :
         self.label   = 'aLabel'
         self.moreName = 'default indices'

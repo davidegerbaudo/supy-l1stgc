@@ -33,7 +33,7 @@ class padIdLook(supy.analysis) :
         sh, ssh, ssf = steps.histos, supy.steps.histos, supy.steps.filters
         obj       = config['objects']
         pot      =  obj['PadOffTool']
-        poti = 'IndicesA'.join(pot)
+        poti = 'IndicesAthena'.join(pot)
         potp = 'Pos'.join(pot)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter()]
@@ -67,6 +67,7 @@ class padIdLook(supy.analysis) :
     def listOfSamples(self,config) :
         test = False #True
         nEventsMax=1000 if test else None
+        # Athena or Athena50k
         return (supy.samples.specify(names='Athena50k', color=r.kBlack, markerStyle = 2,
                                      nEventsMax=nEventsMax)
                 )
