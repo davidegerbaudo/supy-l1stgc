@@ -122,8 +122,8 @@ class IndicesSectorLayer(wrappedChain.calculable) :
                                  ( (not self.sectors) or (sector[i] in self.sectors) ) and \
                                  ( (not self.invalid) or (ieta.at(i)==dummy and
                                                           iphi.at(i)==dummy)         ) and \
-                                 ( (not self.valid) or (ieta.at(i)==dummy and
-                                                        iphi.at(i)==dummy)           )
+                                 ( (not self.valid) or (ieta.at(i)!=dummy and
+                                                        iphi.at(i)!=dummy)           )
                              ,
                              range(len(layer)))
 class IndicesOddSectorLayer(IndicesSectorLayer) :
