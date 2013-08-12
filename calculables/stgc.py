@@ -94,11 +94,12 @@ class IndicesSectorLayer(wrappedChain.calculable) :
     @property
     def name(self) : return 'Indices' + self.label
     def __init__(self, collection=('',''), label=None, layers=[], sectors=[],
-                 invalid=False) :
+                 invalid=None, valid=None) :
         self.label   = label
         self.layers  = frozenset(layers)
         self.sectors = frozenset(sectors)
         self.invalid = invalid
+        self.valid   = valid
         self.fixes   = collection
         self.stash(['Sector', 'Layer']
                    + ['padEtaIdFromOldSimu', 'padPhiIdFromOldSimu'])
@@ -106,6 +107,7 @@ class IndicesSectorLayer(wrappedChain.calculable) :
                                         ["Layer in %s"%str(list(self.layers)) if self.layers else '',
                                          "Sector in %s"%str(list(self.sectors)) if self.sectors else '',
                                          'Invalid' if self.invalid else '',
+                                         'Valid'  if self.valid else '',
                                          ])
                                  )
     def update(self,_) :
@@ -119,19 +121,23 @@ class IndicesSectorLayer(wrappedChain.calculable) :
                                  ( (not self.layers) or (layer[i] in self.layers)    ) and \
                                  ( (not self.sectors) or (sector[i] in self.sectors) ) and \
                                  ( (not self.invalid) or (ieta.at(i)==dummy and
-                                                          iphi.at(i)==dummy)         )
+                                                          iphi.at(i)==dummy)         ) and \
+                                 ( (not self.valid) or (ieta.at(i)==dummy and
+                                                        iphi.at(i)==dummy)           )
                              ,
                              range(len(layer)))
 class IndicesOddSectorLayer(IndicesSectorLayer) :
-    def __init__(self, collection=('',''), label=None, layers=[], invalid=False) :
+    def __init__(self, collection=('',''), label=None, layers=[],
+                 invalid=False, valid=False) :
         super(IndicesOddSectorLayer, self).__init__(collection, 'Odd'+label, layers,
                                                     sectors=range(0+1,16)[::2],
-                                                    invalid=invalid)
+                                                    invalid=invalid, valid=valid)
 class IndicesEvenSectorLayer(IndicesSectorLayer) :
-    def __init__(self, collection=('',''), label=None, layers=[], invalid=False) :
+    def __init__(self, collection=('',''), label=None, layers=[],
+                 invalid=False, valid=False) :
         super(IndicesEvenSectorLayer, self).__init__(collection, 'Even'+label, layers,
                                                      sectors=range(0,16+1)[::2],
-                                                     invalid=invalid)
+                                                     invalid=invalid, valid=valid)
 #__________________________________________________________
 class Pos(wrappedChain.calculable) :
     @property
