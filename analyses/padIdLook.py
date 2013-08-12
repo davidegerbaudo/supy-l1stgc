@@ -34,8 +34,8 @@ class padIdLook(supy.analysis) :
         obj    = config['objects']
         pot    = obj['PadOffTool']
         layers = config['allLayers']
-        poti = 'IndicesAthena'.join(pot)
-        potp = 'Pos'.join(pot)
+        poti   = 'IndicesAthena'.join(pot)
+        potp   = 'Pos'.join(pot)
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter()]
         lsteps += [ssh.multiplicity(b) for b in branchnames]
@@ -53,6 +53,10 @@ class padIdLook(supy.analysis) :
         lsteps += [sh.padIndexAvg(pot, "IndicesOddL%d"%l, iphi=True)  for l in layers]
         lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, ieta=True) for l in layers]
         lsteps += [sh.padIndexAvg(pot, "IndicesEvenL%d"%l, iphi=True) for l in layers]
+        lsteps += [ssh.multiplicity(iInv)
+                   for  iInv  in ["Indices%(oe)sL%(l)dInvalid" % {'oe':oe, 'l':l}
+                                  for oe in ['Even','Odd']
+                                  for l in layers]]
         return lsteps
     def listOfCalculables(self,config) :
         obj    = config['objects']
@@ -63,11 +67,15 @@ class padIdLook(supy.analysis) :
         calcs += sc.fromCollections(cs, [pot, ])
         calcs += [cs.IndicesOddSectorLayer( pot, "L%d"%l, [l]) for l in layers]
         calcs += [cs.IndicesEvenSectorLayer(pot, "L%d"%l, [l]) for l in layers]
+        calcs += [cs.IndicesOddSectorLayer( pot, "L%dInvalid"%l, [l], True)
+                  for l in layers]
+        calcs += [cs.IndicesEvenSectorLayer(pot, "L%dInvalid"%l, [l], True)
+                  for l in layers]
         return calcs
     def listOfSampleDictionaries(self) :
         return [samples.localsinglemu, samples.sandroathena]
     def listOfSamples(self,config) :
-        test = True #False
+        test = False #True
         nEventsMax=1000 if test else None
         # Athena or Athena50k
         return (supy.samples.specify(names='Athena50k', color=r.kBlack, markerStyle = 2,
