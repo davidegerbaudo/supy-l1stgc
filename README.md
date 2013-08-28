@@ -17,8 +17,6 @@ Then
 
 ```
 cd supy-l1stgc
-
 source env.sh
-
 supy analyses/padIdLook.py --loop 1
 ```
