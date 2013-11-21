@@ -17,3 +17,8 @@ localsinglemu.add('JochenSingleMuPos',
 localsinglemu.add('JochenSingleMuNeg',
                   '['+','.join(['"/tmp/atlasG4.%s.NSWHitsDumper.root"'%pn for pn in poseneg[1:]])+']',
                   lumi=1.0e-5)
+# Still JochenSingleMu, but processed locally with
+# TrigT1/TrigT1NSWSimTools/PadTdsOfflineTool  on top of rel_2
+localsinglemu.add('AthenaSingleMu',
+                  '["/tmp/gerbaudo/nsw_rel_2/run/NSWL1Simulation.root"]',
+                  lumi=1.0e-5)
