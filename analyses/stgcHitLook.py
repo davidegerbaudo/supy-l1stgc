@@ -29,6 +29,7 @@ class stgcHitLook(supy.analysis) :
 
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
+                   ssh.multiplicity(stsp, max=20),
                    # supy.steps.histos.multiplicity('truthIndices', max=10),
                    # ssh.multiplicity('IndicesOddSector', max=50),
                    # ssh.multiplicity('IndicesEvenSector', max=50),
@@ -52,8 +53,8 @@ class stgcHitLook(supy.analysis) :
         # lsteps += [supy.steps.printer.printstuff(['Any3LayersWedgeTrigger'.join(stsh),
         #                                           'Any4LayersWedgeTrigger'.join(stsh)])]
         # lsteps += [supy.steps.printer.printstuff(['PadLocalIndices'.join(stsh)])]
-        lsteps += [sh.padIndexAvg(stsh,idx,ieta=True) for idx in indicesEoCpSectorsLayer]
-        lsteps += [sh.padIndexAvg(stsh,idx,iphi=True) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.padIndexAvg(stsh,idx,ieta=True) for idx in indicesEoCpSectorsLayer]
+        # lsteps += [sh.padIndexAvg(stsh,idx,iphi=True) for idx in indicesEoCpSectorsLayer]
 
         # lsteps += [sh.yVsX((stsp,stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
         # lsteps += [sh.yVsX((stsp, stsp), indices=idx) for idx in indicesEoCpSectorsLayer]
