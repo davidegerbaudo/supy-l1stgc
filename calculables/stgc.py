@@ -82,12 +82,13 @@ class Pos(wrappedChain.calculable) :
     def name(self) : return 'Pos'.join(self.fixes)
     def __init__(self, collection) :
         self.fixes = collection
-        self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
+        # self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
+        self.stash(["padTruthHitGlobal%s"%v for v in ['X','Y','Z']])
         self.pv3 = utils.root.PositionV
     def update(self, _) :
-        xs = self.source[self.globalPositionX]
-        ys = self.source[self.globalPositionY]
-        zs = self.source[self.globalPositionZ]
+        xs = self.source[self.padTruthHitGlobalX]
+        ys = self.source[self.padTruthHitGlobalY]
+        zs = self.source[self.padTruthHitGlobalZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
 #__________________________________________________________
 class LocPos(wrappedChain.calculable) :

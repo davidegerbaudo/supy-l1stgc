@@ -6,7 +6,7 @@ class stgcHitLook(supy.analysis) :
 
     def parameters(self) :
         fields =                    [ 'stgcSimhit',     'truthPart']
-        objects =  dict(zip(fields, [('Hits_sTGC_',''), ('TruthParticle_','')]))
+        objects =  dict(zip(fields, [('PadTdsOfflineTool_',''), ('TruthParticle_','')]))
         return {
             'objects'  : objects,
             'allSectors' : range(1, 16+1),
