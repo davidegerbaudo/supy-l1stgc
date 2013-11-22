@@ -19,7 +19,7 @@ class stgcHitLook(supy.analysis) :
         obj       = config['objects']
         stsh      = obj['stgcSimhit']
         truthPart = obj['truthPart']
-        stsi = 'simhitIndices'
+        stsi = 'Indices'.join(stsh)
         stsp = 'Pos'.join(stsh)
         stslp = 'LocPos'.join(stsh)
         stsslp = 'SecLocPos'.join(stsh)
@@ -30,11 +30,10 @@ class stgcHitLook(supy.analysis) :
         lsteps  = []
         lsteps += [supy.steps.printer.progressPrinter(),
                    ssh.multiplicity(stsp, max=20),
-                   # supy.steps.histos.multiplicity('truthIndices', max=10),
+                   sh.yVsX((stsp,stsp), indices=stsi),
+                   #you are here: need to get the sector -> odd/even calcs to work
                    # ssh.multiplicity('IndicesOddSector', max=50),
                    # ssh.multiplicity('IndicesEvenSector', max=50),
-                   # sh.xyMap(stsp, indices='IndicesOddSector'),
-                   # sh.xyMap(stsp, indices='IndicesEvenSector'),
                   ]
         allLayers = config['allLayers']
         indicesSectorLayer = ["IndicesSector%dLayer%d"%(s,l)
@@ -80,14 +79,12 @@ class stgcHitLook(supy.analysis) :
         return lsteps
 
     def listOfCalculables(self,config) :
-
         obj       = config['objects']
         simhit    = obj['stgcSimhit']
         truthPart = obj['truthPart']
         cs = calculables.stgc
         calcs  = supy.calculables.zeroArgs(supy.calculables)
         calcs += [calculables.truth.truthIndices(pdgs=[+13, -13]),
-                  cs.simhitIndices(label=''),
                   ]
         allSectors, allLayers = config['allSectors'], config['allLayers']
         oddSectors, evenSectors = config['oddSectors'], config['evenSectors']
@@ -106,7 +103,9 @@ class stgcHitLook(supy.analysis) :
                   for eok, eos in zip(['Even',  'Odd'    ], [evenSectors, oddSectors])
                   for pck, pcv in zip(['Pivot', 'Confirm'], [True,        False     ])
                   for l in allLayers]
-        calcs += supy.calculables.fromCollections(cs, [simhit, ])
+        #calcs += supy.calculables.fromCollections(cs, [simhit, ])
+        calcs += supy.calculables.fromCollections(calculables.sector, [simhit, ])
+        calcs += supy.calculables.fromCollections(calculables.tds, [simhit, ])
         calcs += supy.calculables.fromCollections(calculables.truth, [truthPart])
 
         return calcs
