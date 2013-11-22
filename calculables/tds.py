@@ -11,6 +11,15 @@ import collections, math
 import stgcGeometry as geo
 
 #__________________________________________________________
+class Indices(wrappedChain.calculable) :
+    @property
+    def name(self) : return 'Indices'.join(self.fixes)
+    def __init__(self, collection) :
+        self.fixes   = collection
+        self.stash(["padTruthHitGlobal%s"%v for v in ['X','Y','Z']])
+    def update(self,_) :
+        self.value = range(self.source[self.padTruthHitGlobalX].size())
+#__________________________________________________________
 class Pos(wrappedChain.calculable) :
     @property
     def name(self) : return 'Pos'.join(self.fixes)
