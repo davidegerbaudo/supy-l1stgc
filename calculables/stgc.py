@@ -3,29 +3,6 @@ import ROOT as r
 import collections, math
 import stgcGeometry as geo
 
-#___________________________________________________________
-class IndicesFilteredOnSector(wrappedChain.calculable) :
-    def __init__(self, collection = None, filterFunctionExpression = None) :
-        self.fixes = collection
-        self.stash(['sectorNumber'])
-        self.func = filterFunctionExpression
-    def update(self,_) :
-        func = eval(self.func)
-        self.value = [i for i,s in enumerate(self.source[self.sectorNumber]) if func(s)]
-#___________________________________________________________
-class IndicesOddSector(IndicesFilteredOnSector) :
-    @property
-    def name(self): return 'IndicesOddSector'
-    def __init__(self, collection = None) :
-        super(IndicesOddSector, self).__init__(collection)
-        self.func = 'lambda i : not i%2'
-#___________________________________________________________
-class IndicesEvenSector(IndicesFilteredOnSector) :
-    @property
-    def name(self): return 'IndicesEvenSector'
-    def __init__(self, collection = None) :
-        super(IndicesEvenSector, self).__init__(collection)
-        self.func = 'lambda i : i%2'
 #__________________________________________________________
 class Indices(wrappedChain.calculable) :
     @property
@@ -82,13 +59,12 @@ class Pos(wrappedChain.calculable) :
     def name(self) : return 'Pos'.join(self.fixes)
     def __init__(self, collection) :
         self.fixes = collection
-        # self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
-        self.stash(["padTruthHitGlobal%s"%v for v in ['X','Y','Z']])
+        self.stash(["globalPosition%s"%v for v in ['X','Y','Z']])
         self.pv3 = utils.root.PositionV
     def update(self, _) :
-        xs = self.source[self.padTruthHitGlobalX]
-        ys = self.source[self.padTruthHitGlobalY]
-        zs = self.source[self.padTruthHitGlobalZ]
+        xs = self.source[self.globalPositionX]
+        ys = self.source[self.globalPositionY]
+        zs = self.source[self.globalPositionZ]
         self.value = [self.pv3(x,y,z) for x,y,z in zip(xs,ys,zs)]
 #__________________________________________________________
 class LocPos(wrappedChain.calculable) :
